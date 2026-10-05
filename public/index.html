@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sistema de Produção</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="topbar">
+        <div class="logo">
+            <span>●</span>
+            Produção
+        </div>
+
+        <div class="status">
+            <span class="status-dot"></span>
+            Sistema online
+        </div>
+    </header>
+
+    <main class="container">
+
+        <section class="welcome">
+            <div>
+                <h1>Dashboard</h1>
+                <p>Acompanhamento da produção em tempo real</p>
+            </div>
+
+            <button onclick="carregarDados()">
+                ↻ Atualizar
+            </button>
+        </section>
+
+       
+
+        <section class="cards">
+
+            <div class="card">
+                <div class="card-icon">📋</div>
+
+                <div>
+                    <span class="card-title">Ordens</span>
+                    <strong id="totalOrdens">0</strong>
+                    <small>ordens cadastradas</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">⚙️</div>
+
+                <div>
+                    <span class="card-title">Produzidas</span>
+                    <strong id="totalProduzidas">0</strong>
+                    <small>peças produzidas</small>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-icon">🏷️</div>
+
+                <div>
+                    <span class="card-title">Etiquetas</span>
+                    <strong id="totalEtiquetas">0</strong>
+                    <small>etiquetas geradas</small>
+                </div>
+            </div>
+
+        </section>
+
+
+        <section class="section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Ordens de produção</h2>
+                    <p>Metas e andamento da produção</p>
+                </div>
+            </div>
+
+            <div id="ordensContainer" class="ordens">
+                <div class="loading">
+                    Carregando ordens...
+                </div>
+            </div>
+
+        </section>
+
+       
+
+        <section class="section">
+
+            <div class="section-header">
+                <div>
+                    <h2>Produções recentes</h2>
+                    <p>Últimas peças registradas</p>
+                </div>
+            </div>
+
+            <div class="table-container">
+
+                <table>
+
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Ordem</th>
+                            <th>Quantidade</th>
+                            <th>Data/Hora</th>
+                            <th>Etiqueta</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="producoesTabela">
+
+                        <tr>
+                            <td colspan="5" class="loading">
+                                Carregando produções...
+                            </td>
+                        </tr>
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        Sistema de Etiquetagem · Dashboard de Produção
+    </footer>
+
+    <script src="js/app.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+node_modules/
+
+.env
+.env.*
+!.env.example
+
+dev.db
+*.db
+*.db-journal
+
+.DS_Store
+Thumbs.db
+
+.vscode/
