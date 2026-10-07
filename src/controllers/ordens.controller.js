@@ -30,6 +30,20 @@ const criarOrdem = async (req, res) => {
     }
 };
 
+const listarHistorico = async (req, res) => {
+    try {
+        const historico = await ordensService.listarHistorico();
+
+        res.status(200).json(historico);
+    } catch (erro) {
+        console.error(erro);
+
+        res.status(500).json({
+            erro: "Erro ao listar histórico"
+        });
+    }
+};
+
 module.exports = {
     listarOrdens,
     criarOrdem

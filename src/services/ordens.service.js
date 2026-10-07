@@ -19,6 +19,25 @@ const criarOrdem = async (dados) => {
     });
 };
 
+const listarHistorico = async () => {
+    return await prisma.ordemProducao.findMany({
+        where: {
+            status: "CONCLUIDA"
+        },
+        include: {
+            produto: true,
+            producoes: {
+                include: {
+                    etiquetas: true
+                }
+            }
+        },
+        orderBy: {
+            id: "desc"
+        }
+    });
+};
+
 module.exports = {
     listarOrdens,
     criarOrdem

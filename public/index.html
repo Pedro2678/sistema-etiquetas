@@ -1,126 +1,408 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Sistema de Produção</title>
+    <title>Dashboard | Sistema de Produção</title>
 
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
+    <!-- CABEÇALHO -->
     <header class="topbar">
+
         <div class="logo">
-            <span>●</span>
-            Produção
+            <div class="logo-icon">⚙</div>
+
+            <div>
+                <h1>Sistema de Produção</h1>
+                <span>Controle e acompanhamento</span>
+            </div>
         </div>
 
-        <div class="status">
+        <div class="system-status">
             <span class="status-dot"></span>
-            Sistema online
+            <span>Sistema online</span>
         </div>
+
     </header>
 
+
+    <!-- CONTEÚDO PRINCIPAL -->
     <main class="container">
 
-        <section class="welcome">
+        <!-- TÍTULO -->
+        <section class="page-header">
+
             <div>
-                <h1>Dashboard</h1>
-                <p>Acompanhamento da produção em tempo real</p>
+                <span class="page-label">MONITORAMENTO</span>
+
+                <h2>Dashboard de produção</h2>
+
+                <p>
+                    Acompanhe o andamento da produção em tempo real.
+                </p>
             </div>
 
-            <button onclick="carregarDados()">
+            <button class="refresh-button" onclick="carregarDados()">
                 ↻ Atualizar
             </button>
+
         </section>
 
+
+        <!-- CARDS PRINCIPAIS -->
+        <section class="summary-grid">
+
+            <!-- OP ATIVA -->
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    📋
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        OP ATIVA
+                    </span>
+
+                    <strong id="opAtiva">
+                        —
+                    </strong>
+
+                    <small id="produtoAtivo">
+                        Nenhuma ordem ativa
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- META -->
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    🎯
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        META
+                    </span>
+
+                    <strong id="metaProducao">
+                        0
+                    </strong>
+
+                    <small>
+                        peças planejadas
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- PRODUZIDO -->
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ⚙️
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        PRODUZIDO
+                    </span>
+
+                    <strong id="totalProduzido">
+                        0
+                    </strong>
+
+                    <small>
+                        peças produzidas
+                    </small>
+
+                </div>
+
+            </div>
+
+
+            <!-- RESTANTE -->
+            <div class="summary-card">
+
+                <div class="summary-icon">
+                    ⏳
+                </div>
+
+                <div class="summary-content">
+
+                    <span class="summary-label">
+                        RESTANTE
+                    </span>
+
+                    <strong id="totalRestante">
+                        0
+                    </strong>
+
+                    <small>
+                        peças restantes
+                    </small>
+
+                </div>
+
+            </div>
+
+        </section>
+
+<!-- ORDENS EM PRODUÇÃO -->
+<section class="panel orders-panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="section-label">
+                PRODUÇÃO
+            </span>
+
+            <h3>Ordens em andamento</h3>
+
+            <p>
+                Acompanhamento das ordens de produção ativas.
+            </p>
+        </div>
+
+    </div>
+
+    <div id="ordensContainer" class="orders-container">
+<section class="panel orders-panel">
+
+    <div class="panel-header">
+
+        <div>
+            <span class="section-label">
+                PRODUÇÃO
+            </span>
+
+            <h3>Ordens em andamento</h3>
+
+            <p>
+                Acompanhamento das ordens de produção ativas.
+            </p>
+        </div>
+
+    </div>
+
+    <div id="ordensContainer" class="orders-container">
+
+        <div class="empty-message">
+            Carregando ordens...
+        </div>
+
+    </div>
+
+</section>
        
+    </div>
 
-        <section class="cards">
+</section>
 
-            <div class="card">
-                <div class="card-icon">📋</div>
-
-                <div>
-                    <span class="card-title">Ordens</span>
-                    <strong id="totalOrdens">0</strong>
-                    <small>ordens cadastradas</small>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">⚙️</div>
-
-                <div>
-                    <span class="card-title">Produzidas</span>
-                    <strong id="totalProduzidas">0</strong>
-                    <small>peças produzidas</small>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-icon">🏷️</div>
-
-                <div>
-                    <span class="card-title">Etiquetas</span>
-                    <strong id="totalEtiquetas">0</strong>
-                    <small>etiquetas geradas</small>
-                </div>
-            </div>
-
-        </section>
-
-
-        <section class="section">
+        <!-- PRODUÇÃO ATUAL -->
+        <section class="production-card">
 
             <div class="section-header">
+
                 <div>
-                    <h2>Ordens de produção</h2>
-                    <p>Metas e andamento da produção</p>
+                    <span class="section-label">
+                        PRODUÇÃO ATUAL
+                    </span>
+
+                    <h3 id="producaoTitulo">
+                        Nenhuma produção ativa
+                    </h3>
                 </div>
+
+                <div class="production-percent">
+                    <strong id="percentualProducao">
+                        0%
+                    </strong>
+                </div>
+
             </div>
 
-            <div id="ordensContainer" class="ordens">
-                <div class="loading">
-                    Carregando ordens...
+
+            <!-- BARRA DE PROGRESSO -->
+            <div class="progress-container">
+
+                <div
+                    id="progressBar"
+                    class="progress-bar"
+                    style="width: 0%">
                 </div>
+
+            </div>
+
+
+            <div class="progress-info">
+
+                <span id="progressoTexto">
+                    0 / 0 peças
+                </span>
+
+                <span id="statusProducao" class="production-status">
+                    ● Aguardando produção
+                </span>
+
             </div>
 
         </section>
 
-       
 
-        <section class="section">
+        <!-- DUAS COLUNAS -->
+        <section class="dashboard-grid">
 
-            <div class="section-header">
-                <div>
-                    <h2>Produções recentes</h2>
-                    <p>Últimas peças registradas</p>
+
+            <!-- ÚLTIMA PRODUÇÃO -->
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="section-label">
+                            ÚLTIMA PRODUÇÃO
+                        </span>
+
+                        <h3>Última peça registrada</h3>
+                    </div>
+
                 </div>
+
+
+                <div class="last-production">
+
+                    <div class="piece-icon">
+                        ⚙
+                    </div>
+
+                    <div class="piece-info">
+
+                        <strong id="ultimaPeca">
+                            —
+                        </strong>
+
+                        <span id="ultimaData">
+                            Nenhuma produção registrada
+                        </span>
+
+                    </div>
+
+                    <div class="piece-status">
+                        ✓
+                    </div>
+
+                </div>
+
             </div>
+
+
+            <!-- ESTATÍSTICAS -->
+            <div class="panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="section-label">
+                            RESUMO
+                        </span>
+
+                        <h3>Produção geral</h3>
+                    </div>
+
+                </div>
+
+
+                <div class="mini-stats">
+
+                    <div>
+                        <span>Ordens</span>
+                        <strong id="totalOrdens">
+                            0
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Produções</span>
+                        <strong id="totalProducoes">
+                            0
+                        </strong>
+                    </div>
+
+                    <div>
+                        <span>Etiquetas</span>
+                        <strong id="totalEtiquetas">
+                            0
+                        </strong>
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PRODUÇÕES RECENTES -->
+        <section class="panel recent-panel">
+
+            <div class="panel-header">
+
+                <div>
+                    <span class="section-label">
+                        HISTÓRICO RECENTE
+                    </span>
+
+                    <h3>Últimas produções</h3>
+
+                    <p>
+                        Registros recebidos pelo sistema.
+                    </p>
+                </div>
+
+            </div>
+
 
             <div class="table-container">
 
                 <table>
 
                     <thead>
+
                         <tr>
-                            <th>ID</th>
+                            <th>Produção</th>
                             <th>Ordem</th>
                             <th>Quantidade</th>
-                            <th>Data/Hora</th>
+                            <th>Data / Hora</th>
                             <th>Etiqueta</th>
                         </tr>
+
                     </thead>
 
                     <tbody id="producoesTabela">
 
                         <tr>
-                            <td colspan="5" class="loading">
+
+                            <td colspan="5" class="empty-message">
                                 Carregando produções...
                             </td>
+
                         </tr>
 
                     </tbody>
@@ -133,11 +415,23 @@
 
     </main>
 
+
+    <!-- RODAPÉ -->
     <footer>
-        Sistema de Etiquetagem · Dashboard de Produção
+
+        <span>
+            Sistema de Etiquetagem
+        </span>
+
+        <span>
+            Monitoramento de produção
+        </span>
+
     </footer>
+
 
     <script src="js/app.js"></script>
 
 </body>
+
 </html>
