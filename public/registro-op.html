@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Registro de OP - Sistema de Produção</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="logo">
+            Sistema de Produção
+        </div>
+
+        <div class="system-status">
+            <span class="status-dot"></span>
+            Sistema online
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div>
+
+                <span class="section-label">
+                    PRODUÇÃO
+                </span>
+
+                <h1>
+                    Registro de OP
+                </h1>
+
+                <p>
+                    Consulte as ordens de produção
+                    e seus respectivos históricos.
+                </p>
+
+            </div>
+
+            <a
+                href="/"
+                class="back-button"
+            >
+                ← Voltar
+            </a>
+
+        </div>
+
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <h3>
+                        Ordens de produção
+                    </h3>
+
+                    <p>
+                        Selecione uma OP para visualizar
+                        seus detalhes.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div id="ordensRegistroContainer">
+
+                <div class="empty-message">
+                    Carregando ordens...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="/js/registro-op.js"></script>
+
+</body>
+
+</html>

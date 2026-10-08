@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Detalhes da OP - Sistema de Produção</title>
+
+    <link
+        rel="stylesheet"
+        href="/css/style.css"
+    >
+
+</head>
+
+<body>
+
+    <header class="topbar">
+
+        <div class="logo">
+            Sistema de Produção
+        </div>
+
+        <div class="system-status">
+
+            <span class="status-dot"></span>
+
+            Sistema online
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="page-header">
+
+            <div>
+
+                <span class="section-label">
+                    REGISTRO DE OP
+                </span>
+
+                <h1 id="tituloOP">
+                    Carregando...
+                </h1>
+
+                <p id="produtoOP">
+                    Carregando informações da ordem...
+                </p>
+
+            </div>
+
+
+            <a
+                href="/registro-op.html"
+                class="back-button"
+            >
+                ← Voltar
+            </a>
+
+        </div>
+
+
+        <!-- RESUMO DA OP -->
+
+        <section class="summary-grid">
+
+            <div class="summary-card">
+
+                <div class="summary-content">
+
+                    <span>
+                        META
+                    </span>
+
+                    <strong id="metaOP">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-content">
+
+                    <span>
+                        PRODUZIDO
+                    </span>
+
+                    <strong id="produzidoOP">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-content">
+
+                    <span>
+                        RESTANTE
+                    </span>
+
+                    <strong id="restanteOP">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="summary-content">
+
+                    <span>
+                        STATUS
+                    </span>
+
+                    <strong id="statusOP">
+                        -
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- PROGRESSO -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="section-label">
+                        PROGRESSO
+                    </span>
+
+                    <h3>
+                        Produção da ordem
+                    </h3>
+
+                </div>
+
+                <strong id="percentualOP">
+                    0%
+                </strong>
+
+            </div>
+
+
+            <div class="progress-container">
+
+                <div
+                    id="barraOP"
+                    class="progress-bar"
+                    style="width: 0%"
+                ></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- HISTÓRICO -->
+
+        <section class="panel">
+
+            <div class="panel-header">
+
+                <div>
+
+                    <span class="section-label">
+                        HISTÓRICO
+                    </span>
+
+                    <h3>
+                        Registro das produções
+                    </h3>
+
+                    <p>
+                        Histórico de todas as peças
+                        registradas nesta ordem.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="producoesOPContainer"
+                class="production-history"
+            >
+
+                <div class="empty-message">
+                    Carregando histórico...
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="/js/detalhes-op.js"></script>
+
+</body>
+
+</html>

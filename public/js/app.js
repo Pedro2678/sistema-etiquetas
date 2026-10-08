@@ -16,64 +16,48 @@ async function carregarDados() {
 
         const respostaOrdens = await fetch(API_ORDENS);
         const ordens = await respostaOrdens.json();
-        
+
         const respostaProducoes = await fetch(API_PRODUCOES);
         const producoes = await respostaProducoes.json();
 
-          console.log("ORDENS:", ordens);
-        console.log("PRODUÇÕES:", producoes);
+        const respostaHistorico = await fetch(
+            "/api/ordens/historico"
+        );
+
+        const historico = await respostaHistorico.json();
 
         // Atualiza o Dashboard
         atualizarDashboard(ordens, producoes);
 
-        // Atualiza tabela
-        atualizarTabelaProducoes(producoes);
+        //atualiza a ultima produção
+       atualizarUltimaProducao(producoes);
+
+
+        // Atualiza histórico
+        renderizarHistorico(historico);
 
     } catch (erro) {
 
-        console.error("Erro ao carregar dados:", erro);
+        console.error(
+            "Erro ao carregar dados:",
+            erro
+        );
 
     }
 
 }
-
 
 // =========================================================
 // ATUALIZAR DASHBOARD
 // =========================================================
 
 function atualizarDashboard(ordens, producoes) {
+
+    // -----------------------------------------------------
+    // ORDENS EM PRODUÇÃO
+    // -----------------------------------------------------
+
    
-    // -----------------------------------------------------
-    // TOTAL DE ORDENS
-    // -----------------------------------------------------
-
-    document.getElementById("totalOrdens").textContent = ordens.length;
-    renderizarOrdens(ordens, producoes);
-
-
-    // -----------------------------------------------------
-    // TOTAL DE PRODUÇÕES
-    // -----------------------------------------------------
-
-    document.getElementById("totalProducoes").textContent = producoes.length;
-
-
-    // -----------------------------------------------------
-    // TOTAL DE ETIQUETAS
-    // -----------------------------------------------------
-
-    let totalEtiquetas = 0;
-
-    producoes.forEach(producao => {
-
-        if (producao.etiquetas) {
-            totalEtiquetas += producao.etiquetas.length;
-        }
-
-    });
-
-    document.getElementById("totalEtiquetas").textContent = totalEtiquetas;
 
 
     // -----------------------------------------------------
@@ -81,86 +65,103 @@ function atualizarDashboard(ordens, producoes) {
     // -----------------------------------------------------
 
     const ordemAtiva = ordens.find(
-    ordem => String(ordem.status).trim().toUpperCase() === "EM_PRODUCAO"
-);
+        ordem =>
+            String(ordem.status)
+                .trim()
+                .toUpperCase() === "EM_PRODUCAO"
+    );
 
 
-    // Se não existir uma OP ativa
+    // -----------------------------------------------------
+    // SE NÃO EXISTIR OP ATIVA
+    // -----------------------------------------------------
+
     if (!ordemAtiva) {
 
-        document.getElementById("opAtiva").textContent = "—";
+        document.getElementById("ordemNumero").textContent =
+            "Nenhuma OP ativa";
 
-        document.getElementById("produtoAtivo").textContent =
-            "Nenhuma ordem ativa";
+        document.getElementById("produtoNome").textContent =
+            "Nenhuma ordem em produção";
 
-        document.getElementById("metaProducao").textContent = "0";
+        document.getElementById("ordemStatus").textContent =
+            "AGUARDANDO";
 
-        document.getElementById("totalProduzido").textContent = "0";
+        document.getElementById("progressoPercentual").textContent =
+            "0%";
 
-        document.getElementById("totalRestante").textContent = "0";
-
-        document.getElementById("percentualProducao").textContent = "0%";
-
-        document.getElementById("progressoTexto").textContent =
+        document.getElementById("progressoQuantidade").textContent =
             "0 / 0 peças";
 
-        document.getElementById("producaoTitulo").textContent =
-            "Nenhuma produção ativa";
+        document.getElementById("progressoRestante").textContent =
+            "0 restantes";
 
-        document.getElementById("progressBar").style.width = "0%";
+        document.getElementById("progressoBarra").style.width =
+            "0%";
+
+        document.getElementById("totalMeta").textContent =
+            "0";
+
+        document.getElementById("totalProduzido").textContent =
+            "0";
+
+        document.getElementById("totalRestante").textContent =
+            "0";
 
         return;
     }
 
 
     // -----------------------------------------------------
-    // DADOS DA OP ATIVA
+    // INFORMAÇÕES DA OP
     // -----------------------------------------------------
 
-    document.getElementById("opAtiva").textContent =
+    document.getElementById("ordemNumero").textContent =
         ordemAtiva.numero;
 
 
-    if (ordemAtiva.produto) {
-
-        document.getElementById("produtoAtivo").textContent =
-            ordemAtiva.produto.nome;
-
-    } else {
-
-        document.getElementById("produtoAtivo").textContent =
-            "Produto não informado";
-
-    }
-
-
-    const meta = ordemAtiva.quantidade;
+    document.getElementById("produtoNome").textContent =
+        ordemAtiva.produto?.nome ||
+        "Produto não informado";
 
 
     // -----------------------------------------------------
-    // PRODUÇÃO DA OP ATIVA
+    // META
     // -----------------------------------------------------
 
-    const producoesDaOrdem = producoes.filter(
-        producao =>
-            producao.ordemProducaoId === ordemAtiva.id
-    );
+    const meta =
+        ordemAtiva.quantidade;
+
+
+    // -----------------------------------------------------
+    // PRODUÇÃO DA OP
+    // -----------------------------------------------------
+
+    const producoesDaOrdem =
+        producoes.filter(
+            producao =>
+                producao.ordemProducaoId === ordemAtiva.id
+        );
 
 
     let produzido = 0;
 
-    producoesDaOrdem.forEach(producao => {
-
-        produzido += producao.quantidade;
-
-    });
+    producoesDaOrdem.forEach(
+        producao => {
+            produzido += producao.quantidade;
+        }
+    );
 
 
     // -----------------------------------------------------
     // RESTANTE
     // -----------------------------------------------------
 
-    const restante = Math.max(meta - produzido, 0);
+    const restante =
+        Math.max(
+            meta - produzido,
+            0
+        );
 
 
     // -----------------------------------------------------
@@ -171,20 +172,25 @@ function atualizarDashboard(ordens, producoes) {
 
     if (meta > 0) {
 
-        percentual = Math.round(
-            (produzido / meta) * 100
-        );
+        percentual =
+            Math.round(
+                (produzido / meta) * 100
+            );
 
     }
 
-    percentual = Math.min(percentual, 100);
+    percentual =
+        Math.min(
+            percentual,
+            100
+        );
 
 
     // -----------------------------------------------------
-    // ATUALIZAR CARDS
+    // RESUMO
     // -----------------------------------------------------
 
-    document.getElementById("metaProducao").textContent =
+    document.getElementById("totalMeta").textContent =
         meta;
 
     document.getElementById("totalProduzido").textContent =
@@ -195,22 +201,19 @@ function atualizarDashboard(ordens, producoes) {
 
 
     // -----------------------------------------------------
-    // ATUALIZAR PRODUÇÃO ATUAL
+    // PROGRESSO
     // -----------------------------------------------------
 
-    document.getElementById("producaoTitulo").textContent =
-        `${ordemAtiva.numero} — ${ordemAtiva.produto?.nome || "Produto"}`;
-
-
-    document.getElementById("percentualProducao").textContent =
+    document.getElementById("progressoPercentual").textContent =
         `${percentual}%`;
 
-
-    document.getElementById("progressoTexto").textContent =
+    document.getElementById("progressoQuantidade").textContent =
         `${produzido} / ${meta} peças`;
 
+    document.getElementById("progressoRestante").textContent =
+        `${restante} restantes`;
 
-    document.getElementById("progressBar").style.width =
+    document.getElementById("progressoBarra").style.width =
         `${percentual}%`;
 
 
@@ -219,29 +222,23 @@ function atualizarDashboard(ordens, producoes) {
     // -----------------------------------------------------
 
     const statusElemento =
-        document.getElementById("statusProducao");
+        document.getElementById("ordemStatus");
 
 
     if (produzido >= meta) {
 
         statusElemento.textContent =
-            "● Produção concluída";
-
-        statusElemento.style.color = "#2563eb";
+            "CONCLUÍDA";
 
     } else if (produzido > 0) {
 
         statusElemento.textContent =
-            "● Produção em andamento";
-
-        statusElemento.style.color = "#16a34a";
+            "EM PRODUÇÃO";
 
     } else {
 
         statusElemento.textContent =
-            "● Aguardando produção";
-
-        statusElemento.style.color = "#6b7280";
+            "AGUARDANDO";
 
     }
 
@@ -250,8 +247,24 @@ function atualizarDashboard(ordens, producoes) {
     // ÚLTIMA PRODUÇÃO
     // -----------------------------------------------------
 
-    atualizarUltimaProducao(producoesDaOrdem);
+   // -----------------------------------------------------
+// ÚLTIMA PRODUÇÃO
+// -----------------------------------------------------
 
+const ultimaProducao =
+    producoesDaOrdem[producoesDaOrdem.length - 1];
+
+if (ultimaProducao) {
+
+    document.getElementById("ultimaProducao").textContent =
+        `+${ultimaProducao.quantidade} peça(s) produzida(s)`;
+
+} else {
+
+    document.getElementById("ultimaProducao").textContent =
+        "Aguardando produção...";
+
+    }
 }
 
 
@@ -259,15 +272,24 @@ function atualizarDashboard(ordens, producoes) {
 // ÚLTIMA PRODUÇÃO
 // =========================================================
 
+// =========================================================
+// ÚLTIMA PRODUÇÃO
+// =========================================================
+
 function atualizarUltimaProducao(producoes) {
+
+    const elemento =
+        document.getElementById("ultimaProducao");
+
+    if (!elemento) {
+        return;
+    }
 
     if (producoes.length === 0) {
 
-        document.getElementById("ultimaPeca").textContent =
-            "—";
-
-        document.getElementById("ultimaData").textContent =
-            "Nenhuma produção registrada";
+        elemento.innerHTML = `
+            <strong>Nenhuma produção registrada</strong>
+        `;
 
         return;
     }
@@ -282,18 +304,38 @@ function atualizarUltimaProducao(producoes) {
     );
 
 
-    const ultima = producoesOrdenadas[0];
+    const ultima =
+        producoesOrdenadas[0];
 
 
-    document.getElementById("ultimaPeca").textContent =
-        `Peça #${ultima.id}`;
+    const data =
+        new Date(ultima.dataHora);
 
 
-    const data = new Date(ultima.dataHora);
+    const horario =
+        data.toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
 
 
-    document.getElementById("ultimaData").textContent =
-        data.toLocaleString("pt-BR");
+    const etiqueta =
+        ultima.etiquetas?.[0];
+
+
+    elemento.innerHTML = `
+        <strong>
+            +${ultima.quantidade} peça(s) produzida(s)
+        </strong>
+
+        <span>
+            Etiqueta: ${etiqueta?.codigo || "Não gerada"}
+        </span>
+
+        <span>
+            ${data.toLocaleDateString("pt-BR")} às ${horario}
+        </span>
+    `;
 
 }
 
@@ -532,9 +574,111 @@ function renderizarOrdens(ordens, producoes) {
 
 }
 
+function renderizarHistorico(historico) {
+
+    const container =
+        document.getElementById("historicoContainer");
+
+    if (!container) {
+        return;
+    }
+
+    if (historico.length === 0) {
+
+        container.innerHTML = `
+            <div class="empty-message">
+                Nenhuma ordem concluída ainda.
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = "";
+
+    historico.forEach(ordem => {
+
+        let produzido = 0;
+
+        ordem.producoes.forEach(producao => {
+            produzido += producao.quantidade;
+        });
+
+        const meta = ordem.quantidade;
+
+        let percentual = 0;
+
+        if (meta > 0) {
+            percentual =
+                Math.round((produzido / meta) * 100);
+        }
+
+        percentual = Math.min(percentual, 100);
+
+        const produto =
+            ordem.produto?.nome ||
+            "Produto não informado";
+
+        const elemento =
+            document.createElement("div");
+
+        elemento.className = "history-item";
+
+        elemento.innerHTML = `
+            <div class="history-item-header">
+
+                <div class="history-info">
+
+                    <strong>
+                        ${ordem.numero}
+                    </strong>
+
+                    <span>
+                        ${produto}
+                    </span>
+
+                </div>
+
+                <div class="history-status">
+                    CONCLUÍDA
+                </div>
+
+            </div>
+
+            <div class="history-progress-container">
+
+                <div
+                    class="history-progress-bar"
+                    style="width: ${percentual}%">
+                </div>
+
+            </div>
+
+            <div class="history-footer">
+
+                <span>
+                    ${produzido} / ${meta} peças
+                </span>
+
+                <span>
+                    ${ordem.producoes.length} produção(ões)
+                </span>
+
+            </div>
+        `;
+
+        container.appendChild(elemento);
+    });
+}
+
 
 // =========================================================
 // INICIAR DASHBOARD
 // =========================================================
 
 carregarDados();
+
+//Atualiza em tempo real- 5s
+setInterval(() => {
+    carregarDados();
+}, 5000);

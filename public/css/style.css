@@ -715,6 +715,10 @@ footer {
         width: min(100% - 35px, 700px);
     }
 
+    .history-container {
+    grid-template-columns: 1fr;
+}
+
     .topbar {
         padding: 0 20px;
     }
@@ -775,6 +779,835 @@ footer {
 
     .system-status {
         display: none;
+    }
+
+}
+/* ==============================
+   HISTÓRICO DE PRODUÇÃO
+   ============================== */
+
+.history-panel {
+    margin-bottom: 20px;
+}
+
+.history-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
+}
+
+.history-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px;
+    background: #f9fafb;
+}
+
+.history-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+    margin-bottom: 14px;
+}
+
+.history-info strong {
+    display: block;
+    font-size: 16px;
+    color: #111827;
+}
+
+.history-info span {
+    display: block;
+    margin-top: 4px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+.history-status {
+    padding: 5px 10px;
+    border-radius: 20px;
+    background: #dcfce7;
+    color: #166534;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.history-progress-container {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.history-progress-bar {
+    height: 100%;
+    width: 100%;
+    background: #16a34a;
+    border-radius: 20px;
+}
+
+.history-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* ==============================
+   REGISTRO DE ORDENS DE PRODUÇÃO
+   ============================== */
+
+#ordensRegistroContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.history-op-item {
+    display: grid;
+    grid-template-columns: 1fr 180px 150px 30px;
+    align-items: center;
+    gap: 20px;
+
+    padding: 18px 20px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+
+    background: #f9fafb;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.history-op-item:hover {
+    transform: translateY(-2px);
+
+    border-color: #d1d5db;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+.history-op-info strong {
+    display: block;
+
+    font-size: 16px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.history-op-info span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+.history-op-quantity span {
+    display: block;
+
+    font-size: 11px;
+
+    color: #6b7280;
+
+    text-transform: uppercase;
+}
+
+.history-op-quantity strong {
+    display: block;
+
+    margin-top: 4px;
+
+    font-size: 14px;
+
+    color: #111827;
+}
+
+.history-op-status {
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+}
+
+.history-op-status.concluida {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.history-op-status.em_producao {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.history-op-arrow {
+    font-size: 22px;
+
+    color: #9ca3af;
+
+    transition: transform 0.2s ease;
+}
+
+.history-op-item:hover .history-op-arrow {
+    transform: translateX(4px);
+
+    color: #2563eb;
+}
+
+
+/* RESPONSIVIDADE */
+
+@media (max-width: 800px) {
+
+    .history-op-item {
+        grid-template-columns: 1fr auto;
+
+        gap: 14px;
+    }
+
+    .history-op-status {
+        justify-self: start;
+    }
+
+    .history-op-arrow {
+        grid-column: 2;
+        grid-row: 1 / span 2;
+    }
+
+}
+
+@media (max-width: 560px) {
+
+    .history-op-item {
+        grid-template-columns: 1fr;
+
+        gap: 12px;
+    }
+
+    .history-op-arrow {
+        display: none;
+    }
+
+}
+
+/* ==============================
+   DETALHES DA ORDEM DE PRODUÇÃO
+   ============================== */
+
+.production-history {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.production-history-item {
+    display: grid;
+    grid-template-columns: 42px 1fr auto;
+    align-items: center;
+    gap: 18px;
+
+    padding: 16px 18px;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+
+    background: #f9fafb;
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.production-history-item:hover {
+    transform: translateY(-2px);
+
+    border-color: #d1d5db;
+
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+}
+
+
+/* Número da produção */
+
+.production-history-number {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 50%;
+
+    background: #eff6ff;
+
+    color: #2563eb;
+
+    font-size: 13px;
+    font-weight: 700;
+}
+
+
+/* Informações da produção */
+
+.production-history-info strong {
+    display: block;
+
+    font-size: 15px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.production-history-info span {
+    display: block;
+
+    margin-top: 5px;
+
+    font-size: 12px;
+
+    color: #6b7280;
+}
+
+
+/* Etiquetas */
+
+.production-history-labels {
+    display: flex;
+
+    align-items: center;
+    justify-content: flex-end;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+.history-label {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 6px;
+
+    background: #eef2ff;
+
+    color: #4338ca;
+
+    font-size: 11px;
+    font-weight: 600;
+}
+
+
+/* ==============================
+   TOPO DA OP
+   ============================== */
+
+#tituloOP {
+    margin-bottom: 6px;
+}
+
+#produtoOP {
+    margin: 0;
+
+    color: #6b7280;
+
+    font-size: 14px;
+}
+
+
+/* Status da OP */
+
+#statusOP {
+    font-size: 14px;
+
+    text-transform: uppercase;
+}
+
+
+/* ==============================
+   RESPONSIVIDADE
+   ============================== */
+
+@media (max-width: 800px) {
+
+    .production-history-item {
+        grid-template-columns: 42px 1fr;
+    }
+
+    .production-history-labels {
+        grid-column: 2;
+
+        justify-content: flex-start;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .production-history-item {
+        grid-template-columns: 1fr;
+
+        gap: 10px;
+    }
+
+    .production-history-number {
+        width: 32px;
+        height: 32px;
+    }
+
+    .production-history-labels {
+        grid-column: auto;
+    }
+
+}
+
+/* =========================================
+   NOVA HOME — MONITORAMENTO DE PRODUÇÃO
+   ========================================= */
+
+.dashboard-home {
+    max-width: 1100px;
+}
+
+
+/* =========================================
+   OP PRINCIPAL
+   ========================================= */
+
+.main-production-card {
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 14px;
+
+    padding: 30px;
+
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+
+    margin-bottom: 18px;
+}
+
+.main-production-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 34px;
+}
+
+.main-production-header h2 {
+    margin: 7px 0 4px;
+
+    font-size: 28px;
+    font-weight: 700;
+
+    color: #111827;
+}
+
+.main-production-header p {
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #6b7280;
+}
+
+
+/* STATUS */
+
+.production-status {
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    background: #dcfce7;
+    color: #166534;
+
+    font-size: 11px;
+    font-weight: 700;
+
+    text-transform: uppercase;
+
+    white-space: nowrap;
+}
+
+
+/* =========================================
+   PROGRESSO
+   ========================================= */
+
+.main-progress-top {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 10px;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+.main-progress-top strong {
+    font-size: 24px;
+
+    color: #2563eb;
+}
+
+
+.main-progress-bar {
+    width: 100%;
+
+    height: 12px;
+
+    background: #e5e7eb;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+}
+
+.main-progress-fill {
+    height: 100%;
+
+    background: #2563eb;
+
+    border-radius: 20px;
+
+    transition: width 0.5s ease;
+}
+
+
+.main-progress-bottom {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    margin-top: 12px;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+.main-progress-bottom strong {
+    color: #111827;
+}
+
+
+/* =========================================
+   RESUMO DA PRODUÇÃO
+   ========================================= */
+
+.production-info {
+    display: grid;
+
+    grid-template-columns: 1.5fr 1fr;
+
+    gap: 18px;
+
+    margin-bottom: 18px;
+}
+
+
+/* PRODUZIDO */
+
+.production-info-main {
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+
+    min-height: 150px;
+
+    padding: 26px 30px;
+
+    background: #111827;
+
+    border-radius: 14px;
+}
+
+.production-info-main span {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.08em;
+
+    color: #9ca3af;
+}
+
+.production-info-main strong {
+    margin-top: 6px;
+
+    font-size: 46px;
+
+    line-height: 1;
+
+    color: #ffffff;
+}
+
+
+/* META / RESTANTE */
+
+.production-info-side {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 1px;
+
+    overflow: hidden;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+
+    background: #e5e7eb;
+}
+
+.production-info-side > div {
+    display: flex;
+
+    flex-direction: column;
+    justify-content: center;
+
+    padding: 24px;
+
+    background: #ffffff;
+}
+
+.production-info-side span {
+    font-size: 11px;
+
+    font-weight: 700;
+
+    letter-spacing: 0.06em;
+
+    color: #9ca3af;
+}
+
+.production-info-side strong {
+    margin-top: 8px;
+
+    font-size: 28px;
+
+    color: #111827;
+}
+
+
+/* =========================================
+   ÚLTIMA PRODUÇÃO
+   ========================================= */
+
+.last-production-card {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 22px 26px;
+
+    margin-bottom: 18px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+}
+
+.last-production-card h3 {
+    margin: 5px 0 0;
+
+    font-size: 16px;
+
+    color: #111827;
+}
+
+.last-production-value {
+    font-size: 15px;
+
+    font-weight: 600;
+
+    color: #2563eb;
+
+    text-align: right;
+}
+
+
+/* =========================================
+   REGISTRO DE OP
+   ========================================= */
+
+.record-access {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 30px;
+
+    padding: 24px 26px;
+
+    background: #ffffff;
+
+    border: 1px solid #e5e7eb;
+
+    border-radius: 14px;
+}
+
+.record-access h3 {
+    margin: 5px 0 4px;
+
+    font-size: 17px;
+
+    color: #111827;
+}
+
+.record-access p {
+    margin: 0;
+
+    font-size: 13px;
+
+    color: #6b7280;
+}
+
+.record-access-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 10px 16px;
+
+    border-radius: 8px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    text-decoration: none;
+
+    white-space: nowrap;
+
+    transition:
+        background 0.2s ease,
+        transform 0.2s ease;
+}
+
+.record-access-button:hover {
+    background: #1d4ed8;
+
+    transform: translateY(-1px);
+}
+
+.record-access-button span {
+    font-size: 17px;
+}
+
+
+/* =========================================
+   RESPONSIVIDADE
+   ========================================= */
+
+@media (max-width: 800px) {
+
+    .production-info {
+        grid-template-columns: 1fr;
+    }
+
+    .main-production-header {
+        flex-direction: column;
+    }
+
+    .last-production-card {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .last-production-value {
+        text-align: left;
+    }
+
+    .record-access {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+}
+
+
+@media (max-width: 560px) {
+
+    .main-production-card {
+        padding: 22px;
+    }
+
+    .main-production-header h2 {
+        font-size: 24px;
+    }
+
+    .production-info-main strong {
+        font-size: 38px;
+    }
+
+    .production-info-side strong {
+        font-size: 24px;
+    }
+
+    .production-info-side {
+        grid-template-columns: 1fr;
+    }
+
+    .main-progress-bottom {
+        flex-direction: column;
+
+        align-items: flex-start;
+
+        gap: 5px;
     }
 
 }

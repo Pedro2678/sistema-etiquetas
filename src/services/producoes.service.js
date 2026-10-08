@@ -1,6 +1,15 @@
 const prisma = require("../database/prisma");
 
 const finalizarProducao = async (dados) => {
+    
+    if (
+    !Number.isInteger(dados.quantidade) ||
+    dados.quantidade <= 0
+) {
+    throw new Error(
+        "A quantidade deve ser um número inteiro maior que zero"
+    );
+}
 
     const ordem = await prisma.ordemProducao.findUnique({
         where: {
@@ -53,16 +62,44 @@ const finalizarProducao = async (dados) => {
 
     if (novaQuantidade === ordem.quantidade) {
 
+    // Conclui a OP atual
+    await prisma.ordemProducao.update({
+        where: {
+            id: ordem.id
+        },
+        data: {
+            status: "CONCLUIDA"
+        }
+    });
+
+
+    // Procura a próxima OP da fila
+    const proximaOrdem =
+        await prisma.ordemProducao.findFirst({
+            where: {
+                status: "AGUARDANDO"
+            },
+            orderBy: {
+                id: "asc"
+            }
+        });
+
+
+    // Coloca a próxima OP em produção
+    if (proximaOrdem) {
+
         await prisma.ordemProducao.update({
             where: {
-                id: ordem.id
+                id: proximaOrdem.id
             },
             data: {
-                status: "CONCLUIDA"
+                status: "EM_PRODUCAO"
             }
         });
 
     }
+
+}
 
     return {
         producao,

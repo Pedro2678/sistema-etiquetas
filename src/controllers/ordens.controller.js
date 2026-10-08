@@ -46,5 +46,6 @@ const listarHistorico = async (req, res) => {
 
 module.exports = {
     listarOrdens,
-    criarOrdem
+    criarOrdem,
+    listarHistorico
 };

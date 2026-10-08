@@ -9,6 +9,23 @@ const listarOrdens = async () => {
 };
 
 const criarOrdem = async (dados) => {
+
+    if (dados.status === "EM_PRODUCAO") {
+
+        const ordemAtiva =
+            await prisma.ordemProducao.findFirst({
+                where: {
+                    status: "EM_PRODUCAO"
+                }
+            });
+
+        if (ordemAtiva) {
+            throw new Error(
+                "Já existe uma ordem de produção em andamento"
+            );
+        }
+    }
+
     return await prisma.ordemProducao.create({
         data: {
             numero: dados.numero,
@@ -40,5 +57,6 @@ const listarHistorico = async () => {
 
 module.exports = {
     listarOrdens,
-    criarOrdem
+    criarOrdem,
+    listarHistorico
 };

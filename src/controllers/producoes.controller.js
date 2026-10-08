@@ -8,12 +8,12 @@ const finalizarProducao = async (req, res) => {
 
         res.status(201).json(producao);
     } catch (erro) {
-        console.error(erro);
+    console.error(erro);
 
-        res.status(500).json({
-            erro: "Erro ao registrar produção"
-        });
-    }
+    res.status(400).json({
+        erro: erro.message
+    });
+}
 };
 
 const listarProducoes = async (req, res) => {
