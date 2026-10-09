@@ -10,33 +10,47 @@ const listarOrdens = async () => {
 
 
 const criarOrdem = async (dados) => {
+    const ordemAtiva = await prisma.ordemProducao.findFirst({
+        where: {
+            status: "EM_PRODUCAO"
+        }
+    });
 
-    if (dados.status === "EM_PRODUCAO") {
-        const ordemAtiva =
-            await prisma.ordemProducao.findFirst({
+    let statusFinal = "AGUARDANDO";
+
+    if (!ordemAtiva) {
+        const ordemAguardando = await prisma.ordemProducao.findFirst({
+            where: {
+                status: "AGUARDANDO"
+            },
+            orderBy: {
+                id: "asc"
+            }
+        });
+
+        if (ordemAguardando) {
+            await prisma.ordemProducao.update({
                 where: {
+                    id: ordemAguardando.id
+                },
+                data: {
                     status: "EM_PRODUCAO"
                 }
             });
-
-        if (ordemAtiva) {
-            throw new Error(
-                "Já existe uma ordem de produção em andamento"
-            );
+        } else {
+            statusFinal = "EM_PRODUCAO";
         }
     }
 
-    // Cria a ordem e deixa o banco gerar o ID
     const ordem = await prisma.ordemProducao.create({
         data: {
             numero: `TEMP-${Date.now()}`,
             quantidade: dados.quantidade,
-            status: dados.status,
+            status: statusFinal,
             produtoId: dados.produtoId
         }
     });
 
-    // Gera o número da OP usando o ID definitivo
     return await prisma.ordemProducao.update({
         where: {
             id: ordem.id

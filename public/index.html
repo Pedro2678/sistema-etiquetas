@@ -1,40 +1,64 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
 <head>
-
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="theme-color" content="#102542">
+    <meta name="description" content="Painel de monitoramento e rastreabilidade da produção industrial.">
 
-    <title>Sistema de Produção</title>
+    <title>Sistema de Produção | Painel</title>
 
-    <link
-        rel="stylesheet"
-        href="/css/style.css"
-    >
-
+    <link rel="stylesheet" href="/css/style.css">
 </head>
 
 <body>
 
-    <!-- CABEÇALHO -->
-
+    <!-- CABEÇALHO E IDENTIDADE VISUAL -->
     <header class="topbar">
 
-        <div class="logo">
-            Sistema de Produção
-        </div>
+        <a href="/" class="logo" aria-label="Página inicial do Sistema de Produção">
+
+            <svg class="logo-icon"
+                 xmlns="http://www.w3.org/2000/svg"
+                 viewBox="0 0 64 64"
+                 fill="none"
+                 aria-hidden="true">
+
+                <path d="M7 49V29L19 36V24L31 31V15H39V43H7Z"
+                      fill="currentColor"/>
+
+                <path d="M5 52H43"
+                      stroke="currentColor"
+                      stroke-width="4"
+                      stroke-linecap="round"/>
+
+                <circle cx="45" cy="20" r="12"
+                        stroke="#58A6FF"
+                        stroke-width="5"/>
+
+                <circle cx="45" cy="20" r="4"
+                        fill="#58A6FF"/>
+
+                <path d="M45 3V7M45 33V37M28 20H32M58 20H62
+                         M33 8L36 11M54 29L57 32M33 32L36 29M54 11L57 8"
+                      stroke="#58A6FF"
+                      stroke-width="4"
+                      stroke-linecap="round"/>
+            </svg>
+
+            <span class="logo-text">
+                <strong>Sistema de Produção</strong>
+                <small>Automação e rastreabilidade</small>
+            </span>
+
+        </a>
 
         <div class="system-status">
-
             <span class="status-dot"></span>
-
-            Sistema online
-
+            <span>Sistema online</span>
         </div>
 
     </header>
@@ -42,56 +66,81 @@
 
     <main class="container dashboard-home">
 
-        <!-- CABEÇALHO DA PÁGINA -->
+        <!-- APRESENTAÇÃO DO SISTEMA -->
+        <section class="hero-banner">
 
+            <div class="hero-logo" aria-hidden="true">
+
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 100 100"
+                     fill="none">
+
+                    <path d="M8 79V43L27 54V34L46 45V18H58V69H8Z"
+                          fill="currentColor"/>
+
+                    <path d="M5 84H68"
+                          stroke="#58A6FF"
+                          stroke-width="6"
+                          stroke-linecap="round"/>
+
+                    <circle cx="72" cy="27" r="17"
+                            stroke="#58A6FF"
+                            stroke-width="7"/>
+
+                    <circle cx="72" cy="27" r="6"
+                            fill="#58A6FF"/>
+                </svg>
+
+            </div>
+
+            <div class="hero-content">
+
+                <span class="section-label">MONITORAMENTO INDUSTRIAL</span>
+
+                <h1>Sistema de Produção</h1>
+
+                <h2>Automação e controle da sua produção</h2>
+
+                <p>
+                    Acompanhe ordens, metas e peças produzidas
+                    em um único painel.
+                </p>
+
+            </div>
+
+            <div class="hero-decoration" aria-hidden="true">
+                PRODUÇÃO • CONTROLE • RASTREABILIDADE
+            </div>
+
+        </section>
+
+
+        <!-- MONITORAMENTO DA ORDEM ATIVA -->
         <div class="page-header">
 
             <div>
-
-                <span class="section-label">
-                    MONITORAMENTO
-                </span>
-
-                <h1>
-                    Produção
-                </h1>
-
-                <p>
-                    Acompanhamento da linha de produção em tempo real.
-                </p>
-
+                <span class="section-label">VISÃO GERAL</span>
+                <h2>Monitoramento da produção</h2>
+                <p>Acompanhe o andamento da linha de produção.</p>
             </div>
 
         </div>
 
 
-        <!-- OP ATIVA -->
-
+        <!-- ORDEM ATIVA -->
         <section class="main-production-card">
 
             <div class="main-production-header">
 
                 <div>
+                    <span class="section-label">ORDEM ATIVA</span>
 
-                    <span class="section-label">
-                        ORDEM ATIVA
-                    </span>
+                    <h2 id="ordemNumero">Carregando...</h2>
 
-                    <h2 id="ordemNumero">
-                        Carregando...
-                    </h2>
-
-                    <p id="produtoNome">
-                        Carregando produto...
-                    </p>
-
+                    <p id="produtoNome">Carregando produto...</p>
                 </div>
 
-
-                <div
-                    id="ordemStatus"
-                    class="production-status"
-                >
+                <div id="ordemStatus" class="production-status">
                     EM PRODUÇÃO
                 </div>
 
@@ -101,39 +150,27 @@
             <div class="main-production-progress">
 
                 <div class="main-progress-top">
-
-                    <span>
-                        Progresso da ordem
-                    </span>
-
-                    <strong id="progressoPercentual">
-                        0%
-                    </strong>
-
+                    <span>Progresso da ordem</span>
+                    <strong id="progressoPercentual">0%</strong>
                 </div>
 
+                <div class="main-progress-bar"
+                     role="progressbar"
+                     aria-label="Progresso da ordem ativa"
+                     aria-valuemin="0"
+                     aria-valuemax="100"
+                     aria-valuenow="0">
 
-                <div class="main-progress-bar">
-
-                    <div
-                        id="progressoBarra"
-                        class="main-progress-fill"
-                        style="width: 0%"
-                    ></div>
+                    <div id="progressoBarra"
+                         class="main-progress-fill"
+                         style="width: 0%">
+                    </div>
 
                 </div>
-
 
                 <div class="main-progress-bottom">
-
-                    <strong id="progressoQuantidade">
-                        0 / 0 peças
-                    </strong>
-
-                    <span id="progressoRestante">
-                        0 restantes
-                    </span>
-
+                    <strong id="progressoQuantidade">0 / 0 peças</strong>
+                    <span id="progressoRestante">0 restantes</span>
                 </div>
 
             </div>
@@ -141,48 +178,24 @@
         </section>
 
 
-        <!-- INFORMAÇÃO DA PRODUÇÃO -->
-
+        <!-- INDICADORES DE PRODUÇÃO -->
         <section class="production-info">
 
             <div class="production-info-main">
-
-                <span>
-                    PEÇAS PRODUZIDAS
-                </span>
-
-                <strong id="totalProduzido">
-                    0
-                </strong>
-
+                <span>PEÇAS PRODUZIDAS</span>
+                <strong id="totalProduzido">0</strong>
             </div>
-
 
             <div class="production-info-side">
 
                 <div>
-
-                    <span>
-                        META
-                    </span>
-
-                    <strong id="totalMeta">
-                        0
-                    </strong>
-
+                    <span>META</span>
+                    <strong id="totalMeta">0</strong>
                 </div>
 
-
                 <div>
-
-                    <span>
-                        RESTANTE
-                    </span>
-
-                    <strong id="totalRestante">
-                        0
-                    </strong>
-
+                    <span>RESTANTE</span>
+                    <strong id="totalRestante">0</strong>
                 </div>
 
             </div>
@@ -191,69 +204,52 @@
 
 
         <!-- ÚLTIMA PRODUÇÃO -->
-
         <section class="last-production-card">
 
             <div>
-
-                <span class="section-label">
-                    ATIVIDADE RECENTE
-                </span>
-
-                <h3>
-                    Última produção
-                </h3>
-
+                <span class="section-label">ATIVIDADE RECENTE</span>
+                <h3>Última produção</h3>
             </div>
 
-
-            <div
-                id="ultimaProducao"
-                class="last-production-value"
-            >
+            <div id="ultimaProducao" class="last-production-value">
                 Aguardando produção...
             </div>
 
         </section>
 
 
-        <!-- ACESSO AO REGISTRO -->
-
+        <!-- ACESSO AO REGISTRO DE OP -->
         <section class="record-access">
 
             <div>
+                <span class="section-label">CONSULTA E RASTREABILIDADE</span>
 
-                <span class="section-label">
-                    CONSULTA
-                </span>
-
-                <h3>
-                    Registro de OP
-                </h3>
+                <h3>Registro de ordens de produção</h3>
 
                 <p>
-                    Consulte ordens, produções,
-                    horários e etiquetas.
+                    Consulte ordens, quantidades produzidas,
+                    horários e etiquetas registradas.
                 </p>
-
             </div>
 
-
-            <a
-                href="/registro-op.html"
-                class="record-access-button"
-            >
+            <a href="/registro-op.html" class="record-access-button">
                 Acessar registro
-                <span>→</span>
+                <span aria-hidden="true">→</span>
             </a>
 
         </section>
 
-    </main>
+        <!-- RODAPÉ -->
+        <footer class="dashboard-footer">
+            <span>Sistema de Produção</span>
+            <span>•</span>
+            <span>Controle e rastreabilidade industrial</span>
+        </footer>
 
+    </main>
 
     <script src="/js/app.js"></script>
 
 </body>
-
 </html>
+```

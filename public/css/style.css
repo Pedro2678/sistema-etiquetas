@@ -1628,3 +1628,333 @@ footer {
     }
 
 }
+
+/* =========================================================
+   IDENTIDADE VISUAL — HOME DO SISTEMA DE PRODUÇÃO
+   Adicionado ao final para preservar as demais telas.
+========================================================= */
+
+.topbar {
+    background: #102542;
+    border-bottom: 1px solid #203b5d;
+    color: #ffffff;
+}
+
+.topbar .logo {
+    color: #ffffff;
+    text-decoration: none;
+    min-width: 0;
+}
+
+.topbar .logo-icon {
+    display: block;
+    flex-shrink: 0;
+    width: 46px;
+    height: 46px;
+    padding: 5px;
+    color: #ffffff;
+    background: #1b365d;
+    border: 1px solid #355579;
+    border-radius: 12px;
+}
+
+.logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+}
+
+.logo-text strong {
+    color: #ffffff;
+    font-size: 16px;
+    line-height: 1.2;
+    font-weight: 700;
+}
+
+.logo-text small {
+    color: #b9c8da;
+    font-size: 11px;
+    line-height: 1.3;
+}
+
+.topbar .system-status {
+    color: #e2e8f0;
+}
+
+.topbar .status-dot {
+    background: #4ade80;
+    box-shadow: 0 0 0 4px rgba(74, 222, 128, 0.15);
+}
+
+/* Banner de apresentação da página principal */
+
+.dashboard-home {
+    max-width: 1100px;
+}
+
+.hero-banner {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    min-height: 205px;
+    overflow: hidden;
+    padding: 30px 34px;
+    margin-bottom: 34px;
+    color: #ffffff;
+    background: linear-gradient(120deg, #102542 0%, #173d68 68%, #20568a 100%);
+    border: 1px solid #244a73;
+    border-radius: 18px;
+    box-shadow: 0 12px 28px rgba(16, 37, 66, 0.12);
+}
+
+.hero-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 100px;
+    width: 100px;
+    height: 100px;
+    padding: 12px;
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.17);
+    border-radius: 20px;
+}
+
+.hero-logo svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.hero-content .section-label {
+    color: #8fc5ff;
+}
+
+.hero-content h1 {
+    margin: 8px 0 5px;
+    color: #ffffff;
+    font-size: clamp(25px, 3vw, 34px);
+    line-height: 1.15;
+    letter-spacing: -0.7px;
+}
+
+.hero-content h2 {
+    margin: 0;
+    color: #d8e8f8;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.hero-content p {
+    max-width: 520px;
+    margin-top: 9px;
+    color: #c2d2e4;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.hero-decoration {
+    position: absolute;
+    right: 22px;
+    bottom: 15px;
+    color: rgba(255, 255, 255, 0.42);
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 1.1px;
+}
+
+/* Cabeçalho da seção abaixo do banner */
+
+.dashboard-home > .page-header {
+    margin-bottom: 20px;
+}
+
+.dashboard-home > .page-header h2 {
+    margin-top: 7px;
+    color: #102542;
+    font-size: 25px;
+}
+
+.dashboard-home > .page-header p {
+    margin-top: 6px;
+    color: #64748b;
+}
+
+/* Cartões com acabamento consistente */
+
+.dashboard-home .main-production-card,
+.dashboard-home .last-production-card,
+.dashboard-home .record-access {
+    border-color: #dfe6ee;
+    border-radius: 14px;
+    box-shadow: 0 5px 18px rgba(16, 37, 66, 0.045);
+}
+
+.dashboard-home .main-production-card {
+    border-top: 4px solid #2563eb;
+}
+
+.dashboard-home .main-production-header h2 {
+    color: #102542;
+}
+
+.dashboard-home .main-progress-top strong {
+    color: #1d65b9;
+}
+
+.dashboard-home .main-progress-bar {
+    background: #e6edf5;
+}
+
+.dashboard-home .main-progress-fill {
+    background: linear-gradient(90deg, #2563eb, #58a6ff);
+}
+
+.dashboard-home .production-info-main {
+    background: linear-gradient(135deg, #102542, #1b3b61);
+}
+
+.dashboard-home .production-info-side {
+    border-color: #dfe6ee;
+    background: #dfe6ee;
+}
+
+.dashboard-home .last-production-card .section-label,
+.dashboard-home .record-access .section-label {
+    color: #64748b;
+}
+
+.dashboard-home .last-production-value {
+    overflow-wrap: anywhere;
+    color: #1d65b9;
+}
+
+.dashboard-home .record-access-button {
+    background: #1d65b9;
+}
+
+.dashboard-home .record-access-button:hover {
+    background: #174f91;
+}
+
+/* Rodapé exclusivo da home */
+
+.dashboard-home .dashboard-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    width: 100%;
+    margin-top: 25px;
+    padding: 18px 0 0;
+    border-top: 1px solid #e1e7ef;
+    color: #8492a6;
+    font-size: 11px;
+}
+
+/* Acessibilidade e telas menores */
+
+.topbar .logo:focus-visible,
+.record-access-button:focus-visible {
+    outline: 3px solid #58a6ff;
+    outline-offset: 4px;
+}
+
+@media (max-width: 800px) {
+    .hero-banner {
+        gap: 20px;
+        padding: 26px;
+    }
+
+    .hero-logo {
+        flex-basis: 82px;
+        width: 82px;
+        height: 82px;
+    }
+
+    .hero-decoration {
+        display: none;
+    }
+}
+
+@media (max-width: 560px) {
+    .topbar {
+        height: auto;
+        min-height: 76px;
+        padding: 14px 18px;
+    }
+
+    .topbar .logo {
+        gap: 10px;
+    }
+
+    .topbar .logo-icon {
+        width: 40px;
+        height: 40px;
+    }
+
+    .logo-text strong {
+        font-size: 14px;
+    }
+
+    .logo-text small {
+        font-size: 10px;
+    }
+
+    .hero-banner {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 17px;
+        min-height: 0;
+        padding: 23px;
+        margin-bottom: 28px;
+    }
+
+    .hero-logo {
+        flex-basis: auto;
+        width: 65px;
+        height: 65px;
+        padding: 8px;
+        border-radius: 14px;
+    }
+
+    .hero-content h1 {
+        font-size: 27px;
+    }
+
+    .hero-content h2 {
+        font-size: 14px;
+    }
+
+    .dashboard-home > .page-header h2 {
+        font-size: 22px;
+    }
+
+    .dashboard-home .main-production-card {
+        padding: 22px;
+    }
+
+    .dashboard-home .record-access {
+        padding: 22px;
+    }
+
+    .dashboard-home .record-access-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .dashboard-home .dashboard-footer {
+        text-align: center;
+    }
+}
