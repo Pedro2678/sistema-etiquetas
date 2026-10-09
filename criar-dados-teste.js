@@ -1,6 +1,7 @@
 const prisma = require("./src/database/prisma");
 
 async function main() {
+
     const produto = await prisma.produto.create({
         data: {
             codigo: "PROD-001",
@@ -9,20 +10,8 @@ async function main() {
         }
     });
 
-    const ordem = await prisma.ordemProducao.create({
-        data: {
-            numero: "OP-001",
-            quantidade: 100,
-            status: "EM_PRODUCAO",
-            produtoId: produto.id
-        }
-    });
-
     console.log("Produto criado:");
     console.log(produto);
-
-    console.log("Ordem de produção criada:");
-    console.log(ordem);
 }
 
 main()

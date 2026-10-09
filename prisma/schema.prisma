@@ -32,6 +32,8 @@ model Producao {
   id              Int      @id @default(autoincrement())
   quantidade      Int
   dataHora        DateTime @default(now())
+   eventoId        String?  @unique
+
 
   ordemProducaoId Int
   ordemProducao   OrdemProducao @relation(fields: [ordemProducaoId], references: [id])

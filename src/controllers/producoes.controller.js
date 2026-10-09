@@ -1,19 +1,23 @@
 const producoesService = require("../services/producoes.service");
 
 const finalizarProducao = async (req, res) => {
+
     try {
         const dados = req.body;
 
-        const producao = await producoesService.finalizarProducao(dados);
+        const resultado = await producoesService.finalizarProducao(dados);
 
-        res.status(201).json(producao);
+        const statusHttp = resultado.duplicado ? 200 : 201;
+
+        return res.status(statusHttp).json(resultado);
+
     } catch (erro) {
-    console.error(erro);
+        console.error(erro);
 
-    res.status(400).json({
-        erro: erro.message
-    });
-}
+        return res.status(400).json({
+            erro: erro.message
+        });
+    }
 };
 
 const listarProducoes = async (req, res) => {

@@ -8,10 +8,10 @@ const listarOrdens = async () => {
     });
 };
 
+
 const criarOrdem = async (dados) => {
 
     if (dados.status === "EM_PRODUCAO") {
-
         const ordemAtiva =
             await prisma.ordemProducao.findFirst({
                 where: {
@@ -26,12 +26,23 @@ const criarOrdem = async (dados) => {
         }
     }
 
-    return await prisma.ordemProducao.create({
+    // Cria a ordem e deixa o banco gerar o ID
+    const ordem = await prisma.ordemProducao.create({
         data: {
-            numero: dados.numero,
+            numero: `TEMP-${Date.now()}`,
             quantidade: dados.quantidade,
             status: dados.status,
             produtoId: dados.produtoId
+        }
+    });
+
+    // Gera o número da OP usando o ID definitivo
+    return await prisma.ordemProducao.update({
+        where: {
+            id: ordem.id
+        },
+        data: {
+            numero: `OP-${String(ordem.id).padStart(3, "0")}`
         }
     });
 };

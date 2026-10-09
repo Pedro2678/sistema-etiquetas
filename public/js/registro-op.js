@@ -69,11 +69,25 @@ function renderizarOrdens(ordens) {
                 .trim()
                 .toUpperCase();
 
-        const statusTexto =
-            status === "CONCLUIDA"
-                ? "CONCLUÍDA"
-                : "EM PRODUÇÃO";
+       let statusTexto;
 
+if (status === "CONCLUIDA") {
+
+    statusTexto = "CONCLUÍDA";
+
+} else if (status === "EM_PRODUCAO") {
+
+    statusTexto = "EM PRODUÇÃO";
+
+} else if (status === "AGUARDANDO") {
+
+    statusTexto = "AGUARDANDO";
+
+} else {
+
+    statusTexto = status;
+
+}
         elemento.innerHTML = `
             <div class="history-op-info">
 
@@ -125,3 +139,6 @@ function renderizarOrdens(ordens) {
 
 
 carregarOrdens();
+setInterval(() => {
+    carregarOrdens();
+}, 5000);

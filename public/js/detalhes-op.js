@@ -320,5 +320,10 @@ function renderizarProducoes(
 }
 
 
-// Inicia a página
+ // Inicia a página
 carregarDetalhesOP();
+
+// Atualiza os detalhes a cada 5 segundos
+setInterval(() => {
+    carregarDetalhesOP();
+}, 5000);
