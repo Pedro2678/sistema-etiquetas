@@ -2,46 +2,79 @@
 let graficoOP = null;
 let tipoGraficoAtual = "bar";
 
+
 async function carregarDetalhesOP() {
     try {
-        const parametros = new URLSearchParams(window.location.search);
+        // Pega o ID da OP na URL
+        const parametros = new URLSearchParams(
+            window.location.search
+        );
+
         const idOP = Number(parametros.get("id"));
 
         if (!idOP) {
-            throw new Error("ID da ordem de produção não informado.");
+            throw new Error(
+                "ID da ordem de produção não informado"
+            );
         }
 
-        const [respostaOrdens, respostaProducoes] = await Promise.all([
-            fetch("/api/ordens"),
-            fetch("/api/producoes")
-        ]);
+        // Busca as ordens pela API
+        const respostaOrdens = await fetch("/api/ordens");
 
-        if (!respostaOrdens.ok || !respostaProducoes.ok) {
-            throw new Error("Não foi possível consultar a API.");
+        if (!respostaOrdens.ok) {
+            throw new Error("Erro ao buscar as ordens");
         }
 
         const ordens = await respostaOrdens.json();
-        const producoes = await respostaProducoes.json();
 
-        const ordem = ordens.find(item => item.id === idOP);
-
-        if (!ordem) {
-            throw new Error("Ordem de produção não encontrada.");
-        }
-
-        const producoesDaOP = producoes.filter(
-            producao => producao.ordemProducaoId === idOP
+        const ordem = ordens.find(
+            ordem => ordem.id === idOP
         );
 
+        if (!ordem) {
+            throw new Error(
+                "Ordem de produção não encontrada"
+            );
+        }
+
+        // Busca as produções pela API
+        const respostaProducoes =
+            await fetch("/api/producoes");
+
+        if (!respostaProducoes.ok) {
+            throw new Error("Erro ao buscar as produções");
+        }
+
+        const producoes = await respostaProducoes.json();
+
+        // Filtra as produções da OP selecionada
+        const producoesDaOP = producoes.filter(
+            producao =>
+                producao.ordemProducaoId === idOP
+        );
+
+        // Renderiza os dados na página
         renderizarDetalhes(ordem, producoesDaOP);
 
     } catch (erro) {
-        console.error("Erro ao carregar detalhes da OP:", erro);
+        console.error(
+            "Erro ao carregar detalhes da OP:",
+            erro
+        );
 
-        document.getElementById("tituloOP").textContent = "Erro";
-        document.getElementById("produtoOP").textContent = erro.message;
+        const titulo = document.getElementById("tituloOP");
+        const produto = document.getElementById("produtoOP");
+
+        if (titulo) titulo.textContent = "Erro";
+        if (produto) produto.textContent = erro.message;
     }
 }
+
+document.addEventListener(
+    "DOMContentLoaded",
+    carregarDetalhesOP
+);
+
 
 function renderizarDetalhes(ordem, producoes) {
     document.getElementById("tituloOP").textContent = ordem.numero;
@@ -308,6 +341,11 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
     });
 }
 
-// Carrega os dados e atualiza a cada cinco segundos.
-carregarDetalhesOP();
-setInterval(carregarDetalhesOP, 5000);
+document.addEventListener("DOMContentLoaded", () => {
+    carregarDetalhesOP();
+
+    // Atualiza os detalhes a cada 5 segundos
+    setInterval(() => {
+        carregarDetalhesOP();
+    }, 5000);
+});
