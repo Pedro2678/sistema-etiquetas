@@ -1,10 +1,10 @@
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "sqlite"
-
 }
 
 model Produto {
@@ -13,32 +13,43 @@ model Produto {
   nome        String
   descricao   String?
 
-  ordens      OrdemProducao[]
+  itens       ItemOrdemProducao[]
 }
 
 model OrdemProducao {
   id          Int      @id @default(autoincrement())
   numero      String   @unique
-  quantidade  Int
   status      String
 
-  produtoId   Int
-  produto     Produto  @relation(fields: [produtoId], references: [id])
-
+  itens       ItemOrdemProducao[]
   producoes   Producao[]
 }
 
-model Producao {
+model ItemOrdemProducao {
   id              Int      @id @default(autoincrement())
   quantidade      Int
-  dataHora        DateTime @default(now())
-   eventoId        String?  @unique
-
-
   ordemProducaoId Int
-  ordemProducao   OrdemProducao @relation(fields: [ordemProducaoId], references: [id])
+  produtoId       Int
 
-  etiquetas       Etiqueta[]
+  ordemProducao   OrdemProducao @relation(fields: [ordemProducaoId], references: [id])
+  produto         Produto       @relation(fields: [produtoId], references: [id])
+  producoes       Producao[]
+
+  @@unique([ordemProducaoId, produtoId])
+}
+
+model Producao {
+  id                    Int      @id @default(autoincrement())
+  quantidade            Int
+  dataHora              DateTime @default(now())
+  eventoId              String?  @unique
+
+  ordemProducaoId       Int
+  itemOrdemProducaoId   Int
+
+  ordemProducao         OrdemProducao       @relation(fields: [ordemProducaoId], references: [id])
+  itemOrdemProducao     ItemOrdemProducao   @relation(fields: [itemOrdemProducaoId], references: [id])
+  etiquetas             Etiqueta[]
 }
 
 model Etiqueta {

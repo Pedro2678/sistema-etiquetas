@@ -2005,3 +2005,284 @@ footer {
     }
 }
 
+/* =========================================
+   REFINAMENTO VISUAL — SISTEMA DE PRODUÇÃO
+   ========================================= */
+
+:root {
+    --industrial-navy: #102542;
+    --industrial-blue: #2563eb;
+    --industrial-border: #dfe6ee;
+    --industrial-muted: #64748b;
+    --industrial-bg: #f3f6fa;
+}
+
+body {
+    background: var(--industrial-bg);
+    color: #172b45;
+    -webkit-font-smoothing: antialiased;
+}
+
+.container {
+    padding-top: 32px;
+    padding-bottom: 44px;
+}
+
+.dashboard-home {
+    width: min(1100px, 100%);
+    margin-inline: auto;
+}
+
+.dashboard-home > .page-header {
+    margin-bottom: 22px;
+}
+
+.dashboard-home .main-production-card,
+.dashboard-home .last-production-card,
+.dashboard-home .record-access {
+    border: 1px solid var(--industrial-border);
+    border-radius: 16px;
+    box-shadow: 0 5px 18px rgba(16, 37, 66, 0.045);
+    transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.dashboard-home .main-production-card {
+    padding: 30px;
+    border-top: 4px solid var(--industrial-blue);
+}
+
+.dashboard-home .main-production-header {
+    margin-bottom: 28px;
+}
+
+.dashboard-home .main-production-header h2 {
+    letter-spacing: -0.4px;
+}
+
+.dashboard-home .main-progress-bar {
+    height: 10px;
+    background: #e7edf5;
+}
+
+.dashboard-home .main-progress-fill {
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+.dashboard-home .last-production-card,
+.dashboard-home .record-access {
+    padding: 24px 26px;
+}
+
+.dashboard-home .record-access-button {
+    border-radius: 9px;
+    padding: 12px 17px;
+}
+
+.dashboard-home .record-access-button:focus-visible {
+    outline: 3px solid #93c5fd;
+    outline-offset: 3px;
+}
+
+/* Cartões de metas individuais na página de detalhes */
+#metasItensOP {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr));
+    gap: 16px;
+}
+
+#metasItensOP .meta-item-card {
+    min-width: 0;
+    padding: 20px;
+    background: #ffffff;
+    border: 1px solid var(--industrial-border);
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(16, 37, 66, 0.035);
+}
+
+#metasItensOP .meta-item-card h3 {
+    margin: 0 0 16px;
+    color: var(--industrial-navy);
+    font-size: 16px;
+    line-height: 1.4;
+}
+
+#metasItensOP .meta-item-card p {
+    margin: 9px 0;
+    color: var(--industrial-muted);
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#metasItensOP .progress-container {
+    height: 8px;
+    margin-top: 16px;
+    background: #e7edf5;
+}
+
+#metasItensOP .progress-bar {
+    background: linear-gradient(90deg, #2563eb, #60a5fa);
+}
+
+@media (max-width: 600px) {
+    .dashboard-home .main-production-card {
+        padding: 22px;
+    }
+
+    .dashboard-home .last-production-card,
+    .dashboard-home .record-access {
+        padding: 20px;
+    }
+
+    #metasItensOP {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ===== IDENTIDADE VISUAL INDUSTRIAL ===== */
+
+:root {
+    --industrial-navy: #162746;
+    --industrial-blue: #2563eb;
+    --industrial-blue-light: #60a5fa;
+    --industrial-blue-soft: #eff6ff;
+    --industrial-green: #15803d;
+    --industrial-green-soft: #dcfce7;
+    --industrial-border: #d9e3ef;
+}
+
+/* Cabeçalho */
+.topbar {
+    background: var(--industrial-navy);
+    color: #ffffff;
+    border-bottom: 3px solid var(--industrial-blue);
+}
+
+/* Cartões principais */
+.summary-card,
+.main-production-card,
+.last-production-card,
+.record-access,
+.panel,
+.metas-itens-section {
+    border: 1px solid var(--industrial-border);
+    box-shadow: 0 5px 18px rgba(22, 39, 70, 0.055);
+}
+
+/* Destaque do monitoramento */
+.main-production-card {
+    border-top: 4px solid var(--industrial-blue);
+    background: linear-gradient(135deg, #ffffff 0%, #f5f9ff 100%);
+}
+
+/* Indicadores do resumo */
+.summary-card {
+    border-top: 3px solid #bfdbfe;
+    transition: border-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.summary-card:hover {
+    border-top-color: var(--industrial-blue);
+    transform: translateY(-2px);
+}
+
+/* Barras de progresso */
+.progress-container,
+.main-progress-bar {
+    background: #e5edf8;
+    overflow: hidden;
+}
+
+.progress-bar,
+.main-progress-fill {
+    background: linear-gradient(
+        90deg,
+        #2563eb,
+        #60a5fa
+    );
+    transition: width 0.35s ease;
+}
+
+/* Metas por tipo de peça */
+#metasItensOP .meta-item-card {
+    border-top: 3px solid #60a5fa;
+    background: linear-gradient(
+        180deg,
+        #ffffff 0%,
+        #f8fbff 100%
+    );
+    transition: border-color 0.2s ease,
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+}
+
+#metasItensOP .meta-item-card:hover {
+    border-top-color: var(--industrial-blue);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.09);
+}
+
+#metasItensOP .meta-item-card h3 {
+    color: var(--industrial-navy);
+}
+
+/* Lista de ordens */
+.history-op-item {
+    border: 1px solid var(--industrial-border);
+    background: #ffffff;
+    transition: background 0.2s ease,
+                border-color 0.2s ease,
+                transform 0.2s ease;
+}
+
+.history-op-item:hover {
+    background: var(--industrial-blue-soft);
+    border-color: #93c5fd;
+    transform: translateY(-2px);
+}
+
+/* Botões */
+button,
+.record-access-button {
+    transition: background 0.2s ease,
+                transform 0.2s ease;
+}
+
+.record-access-button {
+    background: var(--industrial-blue);
+    color: #ffffff;
+}
+
+.record-access-button:hover {
+    background: #1d4ed8;
+}
+
+/* Status: cores discretas e legíveis */
+.history-op-status.em_producao {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.history-op-status.concluida {
+    background: var(--industrial-green-soft);
+    color: var(--industrial-green);
+}
+
+.history-op-status.aguardando {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+/* Respeita quem prefere menos animação */
+@media (prefers-reduced-motion: reduce) {
+    .summary-card,
+    .history-op-item,
+    #metasItensOP .meta-item-card,
+    .progress-bar,
+    .main-progress-fill {
+        transition: none;
+    }
+}
+
+
+

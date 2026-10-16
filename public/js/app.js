@@ -30,7 +30,7 @@ async function carregarDados() {
         atualizarDashboard(ordens, producoes);
 
         //atualiza a ultima produção
-       atualizarUltimaProducao(producoes);
+      // A última produção será atualizada dentro de atualizarDashboard()
 
 
         // Atualiza histórico
@@ -116,94 +116,53 @@ function atualizarDashboard(ordens, producoes) {
     // INFORMAÇÕES DA OP
     // -----------------------------------------------------
 
+   
+    // INFORMAÇÕES DA OP
     document.getElementById("ordemNumero").textContent =
         ordemAtiva.numero;
 
+    const itens = ordemAtiva.itens || [];
+
+    const nomesProdutos = itens
+        .map(item => item.produto?.nome)
+        .filter(Boolean);
 
     document.getElementById("produtoNome").textContent =
-        ordemAtiva.produto?.nome ||
-        "Produto não informado";
+        nomesProdutos.length > 0
+            ? nomesProdutos.join(", ")
+            : "Produtos não informados";
 
-
-    // -----------------------------------------------------
-    // META
-    // -----------------------------------------------------
-
-    const meta =
-        ordemAtiva.quantidade;
-
-
-    // -----------------------------------------------------
-    // PRODUÇÃO DA OP
-    // -----------------------------------------------------
-
-    const producoesDaOrdem =
-        producoes.filter(
-            producao =>
-                producao.ordemProducaoId === ordemAtiva.id
-        );
-
-
-    let produzido = 0;
-
-    producoesDaOrdem.forEach(
-        producao => {
-            produzido += producao.quantidade;
-        }
+    // META TOTAL DA ORDEM
+    const meta = itens.reduce(
+        (total, item) => total + Number(item.quantidade || 0),
+        0
     );
 
+    // PRODUÇÃO TOTAL DA ORDEM
+    const producoesDaOrdem = producoes.filter(
+        producao =>
+            Number(producao.ordemProducaoId) === Number(ordemAtiva.id)
+    );
 
-    // -----------------------------------------------------
+    const produzido = producoesDaOrdem.reduce(
+        (total, producao) => total + Number(producao.quantidade || 0),
+        0
+    );
+
     // RESTANTE
-    // -----------------------------------------------------
+    const restante = Math.max(meta - produzido, 0);
 
-    const restante =
-        Math.max(
-            meta - produzido,
-            0
-        );
-
-
-    // -----------------------------------------------------
     // PERCENTUAL
-    // -----------------------------------------------------
+    const percentual = meta > 0
+        ? Math.min(Math.round((produzido / meta) * 100), 100)
+        : 0;
 
-    let percentual = 0;
-
-    if (meta > 0) {
-
-        percentual =
-            Math.round(
-                (produzido / meta) * 100
-            );
-
-    }
-
-    percentual =
-        Math.min(
-            percentual,
-            100
-        );
-
-
-    // -----------------------------------------------------
     // RESUMO
-    // -----------------------------------------------------
+    document.getElementById("totalMeta").textContent = meta;
+    document.getElementById("totalProduzido").textContent = produzido;
+    document.getElementById("totalRestante").textContent = restante;
 
-    document.getElementById("totalMeta").textContent =
-        meta;
-
-    document.getElementById("totalProduzido").textContent =
-        produzido;
-
-    document.getElementById("totalRestante").textContent =
-        restante;
-
-
-    // -----------------------------------------------------
     // PROGRESSO
-    // -----------------------------------------------------
-
     document.getElementById("progressoPercentual").textContent =
         `${percentual}%`;
 
@@ -216,128 +175,30 @@ function atualizarDashboard(ordens, producoes) {
     document.getElementById("progressoBarra").style.width =
         `${percentual}%`;
 
-
-    // -----------------------------------------------------
     // STATUS
-    // -----------------------------------------------------
+    document.getElementById("ordemStatus").textContent =
+        ordemAtiva.status === "CONCLUIDA"
+            ? "CONCLUÍDA"
+            : produzido > 0
+                ? "EM PRODUÇÃO"
+                : "AGUARDANDO";
 
-    const statusElemento =
-        document.getElementById("ordemStatus");
+    // ÚLTIMA PRODUÇÃO DA ORDEM
+    const ultimaProducao = [...producoesDaOrdem].sort(
+        (a, b) => new Date(b.dataHora) - new Date(a.dataHora)
+    )[0];
 
-
-    if (produzido >= meta) {
-
-        statusElemento.textContent =
-            "CONCLUÍDA";
-
-    } else if (produzido > 0) {
-
-        statusElemento.textContent =
-            "EM PRODUÇÃO";
-
-    } else {
-
-        statusElemento.textContent =
-            "AGUARDANDO";
-
-    }
-
-
-    // -----------------------------------------------------
-    // ÚLTIMA PRODUÇÃO
-    // -----------------------------------------------------
-
-   // -----------------------------------------------------
-// ÚLTIMA PRODUÇÃO
-// -----------------------------------------------------
-
-const ultimaProducao =
-    producoesDaOrdem[producoesDaOrdem.length - 1];
-
-if (ultimaProducao) {
-
-    document.getElementById("ultimaProducao").textContent =
-        `+${ultimaProducao.quantidade} peça(s) produzida(s)`;
-
-} else {
-
-    document.getElementById("ultimaProducao").textContent =
-        "Aguardando produção...";
-
-    }
-}
-
-
-// =========================================================
-// ÚLTIMA PRODUÇÃO
-// =========================================================
-
-// =========================================================
-// ÚLTIMA PRODUÇÃO
-// =========================================================
-
-function atualizarUltimaProducao(producoes) {
-
-    const elemento =
+    const elementoUltimaProducao =
         document.getElementById("ultimaProducao");
 
-    if (!elemento) {
-        return;
+    if (elementoUltimaProducao) {
+        elementoUltimaProducao.textContent = ultimaProducao
+            ? `+${ultimaProducao.quantidade} peça(s) produzida(s)`
+            : "Aguardando produção...";
     }
-
-    if (producoes.length === 0) {
-
-        elemento.innerHTML = `
-            <strong>Nenhuma produção registrada</strong>
-        `;
-
-        return;
-    }
-
-
-    // Ordena da mais recente para a mais antiga
-
-    const producoesOrdenadas = [...producoes].sort(
-        (a, b) =>
-            new Date(b.dataHora) -
-            new Date(a.dataHora)
-    );
-
-
-    const ultima =
-        producoesOrdenadas[0];
-
-
-    const data =
-        new Date(ultima.dataHora);
-
-
-    const horario =
-        data.toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-
-
-    const etiqueta =
-        ultima.etiquetas?.[0];
-
-
-    elemento.innerHTML = `
-        <strong>
-            +${ultima.quantidade} peça(s) produzida(s)
-        </strong>
-
-        <span>
-            Etiqueta: ${etiqueta?.codigo || "Não gerada"}
-        </span>
-
-        <span>
-            ${data.toLocaleDateString("pt-BR")} às ${horario}
-        </span>
-    `;
-
 }
+
+
 
 
 // =========================================================

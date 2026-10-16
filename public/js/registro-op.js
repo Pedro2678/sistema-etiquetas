@@ -29,88 +29,73 @@ async function carregarOrdens() {
 }
 
 
-function renderizarOrdens(ordens) {
 
-    const container =
-        document.getElementById(
-            "ordensRegistroContainer"
-        );
+function renderizarOrdens(ordens) {
+    const container = document.getElementById(
+        "ordensRegistroContainer"
+    );
 
     if (!container) {
         return;
     }
 
     if (ordens.length === 0) {
-
         container.innerHTML = `
             <div class="empty-message">
                 Nenhuma ordem de produção cadastrada.
             </div>
         `;
-
         return;
     }
 
     container.innerHTML = "";
 
     ordens.forEach(ordem => {
-
-        const elemento =
-            document.createElement("div");
-
+        const elemento = document.createElement("div");
         elemento.className = "history-op-item";
 
-        const produto =
-            ordem.produto?.nome ||
-            "Produto não informado";
+        // Os produtos e as metas agora ficam em ordem.itens
+        const itens = ordem.itens || [];
 
-        const status =
-            String(ordem.status)
-                .trim()
-                .toUpperCase();
+        const meta = itens.reduce(
+            (total, item) =>
+                total + Number(item.quantidade || 0),
+            0
+        );
 
-       let statusTexto;
+        const produtos = itens
+            .map(item => item.produto?.nome)
+            .filter(Boolean);
 
-if (status === "CONCLUIDA") {
+        const produtoTexto = produtos.length > 0
+            ? produtos.join(", ")
+            : "Produtos não informados";
 
-    statusTexto = "CONCLUÍDA";
+        const status = String(ordem.status || "")
+            .trim()
+            .toUpperCase();
 
-} else if (status === "EM_PRODUCAO") {
+        let statusTexto;
 
-    statusTexto = "EM PRODUÇÃO";
+        if (status === "CONCLUIDA") {
+            statusTexto = "CONCLUÍDA";
+        } else if (status === "EM_PRODUCAO") {
+            statusTexto = "EM PRODUÇÃO";
+        } else if (status === "AGUARDANDO") {
+            statusTexto = "AGUARDANDO";
+        } else {
+            statusTexto = status || "Não informado";
+        }
 
-} else if (status === "AGUARDANDO") {
-
-    statusTexto = "AGUARDANDO";
-
-} else {
-
-    statusTexto = status;
-
-}
         elemento.innerHTML = `
             <div class="history-op-info">
-
-                <strong>
-                    ${ordem.numero}
-                </strong>
-
-                <span>
-                    ${produto}
-                </span>
-
+                <strong>${ordem.numero}</strong>
+                <span></span>
             </div>
 
             <div class="history-op-quantity">
-
-                <span>
-                    Meta
-                </span>
-
-                <strong>
-                    ${ordem.quantidade} peças
-                </strong>
-
+                <span>Meta</span>
+                <strong>${meta} peças</strong>
             </div>
 
             <div class="history-op-status ${status.toLowerCase()}">
@@ -122,20 +107,21 @@ if (status === "CONCLUIDA") {
             </div>
         `;
 
-        elemento.addEventListener(
-            "click",
-            () => {
+        // Inserimos o nome dos produtos como texto,
+        // sem interpretar os nomes como HTML.
+        elemento.querySelector(
+            ".history-op-info span"
+        ).textContent = produtoTexto;
 
-                window.location.href =
-                    `/detalhes-op.html?id=${ordem.id}`;
-
-            }
-        );
+        elemento.addEventListener("click", () => {
+            window.location.href =
+                `/detalhes-op.html?id=${ordem.id}`;
+        });
 
         container.appendChild(elemento);
-
     });
 }
+
 
 
 carregarOrdens();

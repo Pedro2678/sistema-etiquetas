@@ -70,11 +70,6 @@ async function carregarDetalhesOP() {
     }
 }
 
-document.addEventListener(
-    "DOMContentLoaded",
-    carregarDetalhesOP
-);
-
 
 function renderizarDetalhes(ordem, producoes) {
     document.getElementById("tituloOP").textContent = ordem.numero;
@@ -86,22 +81,124 @@ function renderizarDetalhes(ordem, producoes) {
         0
     );
 
-    const meta = ordem.quantidade;
-    const restante = Math.max(meta - produzido, 0);
+    
+const itens = ordem.itens || [];
 
-    const percentual = meta > 0
-        ? Math.min(Math.round((produzido / meta) * 100), 100)
-        : 0;
 
-    document.getElementById("metaOP").textContent = `${meta} peças`;
-    document.getElementById("produzidoOP").textContent = `${produzido} peças`;
-    document.getElementById("restanteOP").textContent = `${restante} peças`;
-    document.getElementById("statusOP").textContent = ordem.status;
-    document.getElementById("percentualOP").textContent = `${percentual}%`;
-    document.getElementById("barraOP").style.width = `${percentual}%`;
 
-    renderizarProducoes(producoes);
-    renderizarGrafico(meta, produzido, restante, producoes);
+const containerMetas = document.getElementById("metasItensOP");
+
+if (containerMetas) {
+    if (itens.length === 0) {
+        containerMetas.textContent =
+            "Nenhum item cadastrado nesta ordem.";
+    } else {
+        containerMetas.innerHTML = "";
+
+        itens.forEach((item) => {
+            const metaItem = Number(item.quantidade || 0);
+
+            // Soma apenas as produções deste item da ordem.
+            const produzidoItem = producoes
+                .filter(producao =>
+                    producao.itemOrdemProducaoId === item.id
+                )
+                .reduce(
+                    (total, producao) =>
+                        total + Number(producao.quantidade || 0),
+                    0
+                );
+
+            const restanteItem = Math.max(
+                metaItem - produzidoItem,
+                0
+            );
+
+            const percentualItem = metaItem > 0
+                ? Math.min(
+                    Math.round((produzidoItem / metaItem) * 100),
+                    100
+                )
+                : 0;
+
+            const card = document.createElement("div");
+            card.className = "meta-item-card";
+
+            const nome = document.createElement("h3");
+            nome.textContent =
+                item.produto?.nome || "Produto não informado";
+
+            const metaTexto = document.createElement("p");
+            metaTexto.textContent = `Meta: ${metaItem} peças`;
+
+            const produzidoTexto = document.createElement("p");
+            produzidoTexto.textContent =
+                `Produzido: ${produzidoItem} peças`;
+
+            const restanteTexto = document.createElement("p");
+            restanteTexto.textContent =
+                `Restante: ${restanteItem} peças`;
+
+            const percentualTexto = document.createElement("p");
+            percentualTexto.textContent =
+                `Conclusão: ${percentualItem}%`;
+
+            const barraFundo = document.createElement("div");
+            barraFundo.className = "progress-container";
+
+            const barra = document.createElement("div");
+            barra.className = "progress-bar";
+            barra.style.width = `${percentualItem}%`;
+
+            barraFundo.appendChild(barra);
+
+            card.append(
+                nome,
+                metaTexto,
+                produzidoTexto,
+                restanteTexto,
+                percentualTexto,
+                barraFundo
+            );
+
+            containerMetas.appendChild(card);
+        });
+    }
+}
+
+
+const meta = itens.reduce(
+    (total, item) => total + Number(item.quantidade || 0),
+    0
+);
+
+const restante = Math.max(meta - produzido, 0);
+
+const percentual = meta > 0
+    ? Math.min(Math.round((produzido / meta) * 100), 100)
+    : 0;
+
+const produtos = itens
+    .map(item => item.produto?.nome)
+    .filter(Boolean);
+
+const produtoElemento = document.getElementById("produtoNome");
+
+if (produtoElemento) {
+    produtoElemento.textContent = produtos.length
+        ? produtos.join(", ")
+        : "Produtos não informados";
+}
+
+document.getElementById("metaOP").textContent = `${meta} peças`;
+document.getElementById("produzidoOP").textContent = `${produzido} peças`;
+document.getElementById("restanteOP").textContent = `${restante} peças`;
+document.getElementById("statusOP").textContent = ordem.status;
+document.getElementById("percentualOP").textContent = `${percentual}%`;
+document.getElementById("barraOP").style.width = `${percentual}%`;
+
+renderizarProducoes(producoes);
+renderizarGrafico(meta, produzido, restante, producoes, itens);
 }
 
 function renderizarProducoes(producoes) {
@@ -173,8 +270,8 @@ function renderizarProducoes(producoes) {
         container.appendChild(elemento);
     });
 }
-
-function renderizarGrafico(meta, produzido, restante, producoes) {
+   
+    function renderizarGrafico(meta, produzido, restante, producoes, itens = []) {
     const canvas = document.getElementById("graficoOP");
     const seletor = document.getElementById("tipoGraficoOP");
     const mensagem = document.getElementById("mensagemGraficoOP");
@@ -185,12 +282,10 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
     }
 
     if (typeof Chart === "undefined") {
-        mensagem.textContent =
-            "Não foi possível carregar os gráficos. Verifique a conexão com a internet.";
+        mensagem.textContent = "Não foi possível carregar os gráficos.";
         return;
     }
 
-    // Configura o seletor apenas uma vez.
     if (seletor.dataset.configurado !== "true") {
         seletor.value = tipoGraficoAtual;
 
@@ -202,54 +297,125 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
         seletor.dataset.configurado = "true";
     }
 
-    // Ordena os eventos do mais antigo para o mais recente.
-    const ordenadas = [...producoes].sort(
-        (a, b) => new Date(a.dataHora) - new Date(b.dataHora)
+    const cores = [
+        "#2563eb",
+        "#16a34a",
+        "#f59e0b",
+        "#9333ea",
+        "#e11d48"
+    ];
+    console.log("Itens recebidos:", itens);
+console.log("Produções recebidas:", producoes);
+console.log("Tipo de gráfico:", tipoGraficoAtual);
+
+    const dadosItens = itens.map((item, indice) => {
+        const producoesItem = producoes.filter(
+            p => Number(p.itemOrdemProducaoId) === Number(item.id)
     );
 
+        const quantidadeProduzida = producoesItem.reduce(
+            (total, p) => total + Number(p.quantidade || 0),
+            0
+        );
+
+        return {
+            id: item.id,
+            nome: item.produto?.nome || `Tipo ${indice + 1}`,
+            meta: Number(item.quantidade || 0),
+            produzido: quantidadeProduzida,
+            cor: cores[indice % cores.length],
+            producoes: producoesItem
+        };
+    });
+
+    console.log("Dados preparados para o gráfico:", dadosItens);
+console.log("Canvas:", canvas);
+console.log("Chart disponível:", typeof Chart);
+
     const tipo = tipoGraficoAtual;
+
+    let datasets = [];
     let rotulos = [];
-    let valores = [];
     let titulo = "";
 
     if (tipo === "pie") {
-        rotulos = ["Produzido", "Restante"];
-        valores = [produzido, restante];
-        titulo = "Produzido x restante";
+        rotulos = dadosItens.map(item => item.nome);
 
-        mensagem.textContent =
-            "Distribuição da produção em relação à meta da ordem.";
-    } else if (tipo === "line") {
-        let acumulado = 0;
+        datasets = [{
+            label: "Peças produzidas",
+            data: dadosItens.map(item => item.produzido),
+            backgroundColor: dadosItens.map(item => item.cor),
+            borderColor: "#ffffff",
+            borderWidth: 3
+        }];
 
-        rotulos = ordenadas.map((producao, indice) => {
-            acumulado += producao.quantidade;
+        titulo = "Distribuição da produção por tipo";
 
-            return producao.eventoId || `Registro ${indice + 1}`;
-        });
-
-        valores = ordenadas.map((producao, indice) => {
-            return ordenadas
-                .slice(0, indice + 1)
-                .reduce((total, item) => total + item.quantidade, 0);
-        });
-
-        titulo = "Produção acumulada por evento";
-
-        mensagem.textContent = ordenadas.length
-            ? "Cada ponto representa o total acumulado após o evento indicado no eixo horizontal."
-            : "Ainda não há eventos registrados para esta ordem.";
-    } else {
-        rotulos = ordenadas.map((producao, indice) =>
-            producao.eventoId || `Registro ${indice + 1}`
+        const totalProduzido = dadosItens.reduce(
+            (total, item) => total + item.produzido,
+            0
         );
 
-        valores = ordenadas.map(producao => producao.quantidade);
-        titulo = "Quantidade de peças por evento";
+        mensagem.textContent = totalProduzido > 0
+            ? "Cada fatia representa a quantidade produzida de um tipo de peça."
+            : "Ainda não há peças produzidas para exibir no gráfico.";
+    } else if (tipo === "line") {
+        const eventos = [...producoes].sort(
+            (a, b) => new Date(a.dataHora) - new Date(b.dataHora)
+        );
 
-        mensagem.textContent = ordenadas.length
-            ? "Cada barra representa a quantidade de peças registrada em um evento. Passe o cursor sobre uma barra para ver os detalhes."
+        rotulos = eventos.map((p, i) =>
+            p.eventoId || `Registro ${i + 1}`
+        );
+
+        datasets = dadosItens.map(item => {
+            let acumulado = 0;
+
+            const valores = eventos.map(evento => {
+                if (Number(evento.itemOrdemProducaoId) === Number(item.id)) {
+                    acumulado += Number(evento.quantidade || 0);
+                }
+
+                return acumulado;
+            });
+
+            return {
+                label: item.nome,
+                data: valores,
+                borderColor: item.cor,
+                backgroundColor: item.cor,
+                borderWidth: 3,
+                tension: 0.25,
+                pointRadius: 4,
+                fill: false
+            };
+        });
+
+        titulo = "Produção acumulada por tipo";
+        mensagem.textContent = eventos.length
+            ? "Cada linha acompanha a produção acumulada de um tipo de peça por evento."
             : "Ainda não há eventos registrados para esta ordem.";
+    } else {
+        rotulos = dadosItens.map(item => item.nome);
+
+        datasets = [
+            {
+                label: "Meta",
+                data: dadosItens.map(item => item.meta),
+                backgroundColor: "#cbd5e1",
+                borderRadius: 5
+            },
+            {
+                label: "Produzido",
+                data: dadosItens.map(item => item.produzido),
+                backgroundColor: dadosItens.map(item => item.cor),
+                borderRadius: 5
+            }
+        ];
+
+        titulo = "Meta x produção por tipo de peça";
+        mensagem.textContent =
+            "Compare a meta planejada com a quantidade produzida de cada tipo.";
     }
 
     if (graficoOP) {
@@ -261,23 +427,7 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
         type: tipo,
         data: {
             labels: rotulos,
-            datasets: [{
-                label: tipo === "line"
-                    ? "Total acumulado de peças"
-                    : tipo === "pie"
-                        ? "Quantidade de peças"
-                        : "Peças registradas no evento",
-                data: valores,
-                backgroundColor: tipo === "pie"
-                    ? ["#16a34a", "#cbd5e1"]
-                    : tipo === "line"
-                        ? "#2563eb"
-                        : "#3b82f6",
-                borderColor: tipo === "line" ? "#1d4ed8" : "#dbeafe",
-                borderWidth: tipo === "line" ? 3 : 1,
-                tension: 0.25,
-                fill: false
-            }]
+            datasets
         },
         options: {
             responsive: true,
@@ -288,7 +438,8 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
             },
             plugins: {
                 legend: {
-                    display: tipo === "pie"
+                    display: true,
+                    position: "bottom"
                 },
                 title: {
                     display: true,
@@ -296,21 +447,9 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
                 },
                 tooltip: {
                     callbacks: {
-                        afterLabel: function(context) {
-                            if (tipo === "pie") return "";
-
-                            const producao = ordenadas[context.dataIndex];
-
-                            if (!producao) return "";
-
-                            const data = new Date(producao.dataHora);
-                            const horario = data.toLocaleString("pt-BR");
-
-                            return [
-                                `Evento: ${producao.eventoId || "Não informado"}`,
-                                `Quantidade deste evento: ${producao.quantidade} peça(s)`,
-                                `Data: ${horario}`
-                            ];
+                        label: context => {
+                            const valor = Number(context.raw || 0);
+                            return `${context.dataset.label}: ${valor} peças`;
                         }
                     }
                 }
@@ -318,22 +457,17 @@ function renderizarGrafico(meta, produzido, restante, producoes) {
             scales: tipo === "pie" ? {} : {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    },
+                    ticks: { precision: 0 },
                     title: {
                         display: true,
-                        text: tipo === "line"
-                            ? "Total acumulado de peças"
-                            : "Peças por evento"
+                        text: "Quantidade de peças"
                     }
                 },
                 x: {
-                    title: {
-                        display: true,
-                        text: tipo === "line" || tipo === "bar"
-                            ? "Evento de produção"
-                            : ""
+                    ticks: {
+                        autoSkip: false,
+                        maxRotation: 35,
+                        minRotation: 0
                     }
                 }
             }

@@ -1,39 +1,38 @@
+
 const prisma = require("../database/prisma");
 
-const finalizarProducao = async (dados) => {  
-    if (
-        !Number.isInteger(dados.quantidade) ||
-        dados.quantidade <= 0
-    ) {
-        throw new Error(
-            "A quantidade deve ser um número inteiro maior que zero"
-        );
+const finalizarProducao = async (dados) => {
+    const quantidade = Number(dados.quantidade);
+    const ordemProducaoId = Number(dados.ordemProducaoId);
+    const itemOrdemProducaoId = Number(dados.itemOrdemProducaoId);
+
+    if (!Number.isInteger(quantidade) || quantidade <= 0) {
+        throw new Error("A quantidade deve ser um inteiro maior que zero");
     }
 
-    // Valida o identificador do evento, quando enviado
+    if (!Number.isInteger(ordemProducaoId) || ordemProducaoId <= 0) {
+        throw new Error("ordemProducaoId inválido");
+    }
+
+    if (!Number.isInteger(itemOrdemProducaoId) || itemOrdemProducaoId <= 0) {
+        throw new Error("itemOrdemProducaoId inválido");
+    }
+
     let eventoId = dados.eventoId;
 
     if (eventoId !== undefined) {
-        if (
-            typeof eventoId !== "string" ||
-            eventoId.trim() === ""
-        ) {
-            throw new Error(
-                "O identificador do evento é inválido"
-            );
+        if (typeof eventoId !== "string" || !eventoId.trim()) {
+            throw new Error("O identificador do evento é inválido");
         }
-
         eventoId = eventoId.trim();
     }
 
-    // Verifica se esse evento já foi processado
     if (eventoId) {
         const existente = await prisma.producao.findUnique({
-            where: {
-                eventoId: eventoId
-            },
+            where: { eventoId },
             include: {
-                etiquetas: true
+                etiquetas: true,
+                itemOrdemProducao: { include: { produto: true } }
             }
         });
 
@@ -47,64 +46,54 @@ const finalizarProducao = async (dados) => {
     }
 
     try {
-
         return await prisma.$transaction(async (tx) => {
+            const item = await tx.itemOrdemProducao.findUnique({
+                where: { id: itemOrdemProducaoId },
+                include: { produto: true }
+            });
+
+            if (!item || item.ordemProducaoId !== ordemProducaoId) {
+                throw new Error("Item não encontrado nesta ordem de produção");
+            }
 
             const ordem = await tx.ordemProducao.findUnique({
-                where: {
-                    id: dados.ordemProducaoId
-                }
+                where: { id: ordemProducaoId },
+                include: { itens: true }
             });
 
             if (!ordem) {
-                throw new Error(
-                    "Ordem de produção não encontrada"
-                );
-            }
-
-            if (ordem.status === "CONCLUIDA") {
-                throw new Error(
-                    "Ordem de produção já concluída"
-                );
+                throw new Error("Ordem de produção não encontrada");
             }
 
             if (ordem.status !== "EM_PRODUCAO") {
-                throw new Error(
-                    "A ordem de produção não está em produção"
-                );
+                throw new Error("A ordem de produção não está em produção");
             }
 
-            const producoes = await tx.producao.findMany({
-                where: {
-                    ordemProducaoId: ordem.id
-                }
+            const producoesItem = await tx.producao.findMany({
+                where: { itemOrdemProducaoId }
             });
 
-            const produzido = producoes.reduce(
-                (total, producao) =>
-                    total + producao.quantidade,
+            const totalItem = producoesItem.reduce(
+                (total, producao) => total + producao.quantidade,
                 0
             );
 
-            const novaQuantidade =
-                produzido + dados.quantidade;
-
-            if (novaQuantidade > ordem.quantidade) {
-                throw new Error(
-                    "Produção ultrapassa a meta da ordem de produção"
-                );
+            if (totalItem + quantidade > item.quantidade) {
+                throw new Error("Produção ultrapassa a meta deste tipo de peça");
             }
 
-            // Registra a produção com o identificador do evento
             const producao = await tx.producao.create({
                 data: {
-                    quantidade: dados.quantidade,
-                    ordemProducaoId: ordem.id,
+                    quantidade,
+                    ordemProducaoId,
+                    itemOrdemProducaoId,
                     ...(eventoId ? { eventoId } : {})
+                },
+                include: {
+                    itemOrdemProducao: { include: { produto: true } }
                 }
             });
 
-            // Cria a etiqueta vinculada à produção
             const etiqueta = await tx.etiqueta.create({
                 data: {
                     codigo: `ETQ-${String(producao.id).padStart(6, "0")}`,
@@ -113,60 +102,46 @@ const finalizarProducao = async (dados) => {
                 }
             });
 
-            // Conclui a OP quando a meta é atingida
-            if (novaQuantidade === ordem.quantidade) {
+            const producoesOrdem = await tx.producao.findMany({
+                where: { ordemProducaoId }
+            });
 
+            const todosItensConcluidos = ordem.itens.every((itemOrdem) => {
+                const totalProduzido = producoesOrdem
+                    .filter((p) => p.itemOrdemProducaoId === itemOrdem.id)
+                    .reduce((total, p) => total + p.quantidade, 0);
+
+                return totalProduzido >= itemOrdem.quantidade;
+            });
+
+            if (todosItensConcluidos) {
                 await tx.ordemProducao.update({
-                    where: {
-                        id: ordem.id
-                    },
-                    data: {
-                        status: "CONCLUIDA"
-                    }
+                    where: { id: ordemProducaoId },
+                    data: { status: "CONCLUIDA" }
                 });
 
-                // Busca a próxima OP aguardando
-                const proximaOrdem =
-                    await tx.ordemProducao.findFirst({
-                        where: {
-                            status: "AGUARDANDO"
-                        },
-                        orderBy: {
-                            id: "asc"
-                        }
-                    });
-
-                // Ativa a próxima OP da fila
+                const proximaOrdem = await tx.ordemProducao.findFirst({
+                    where: { status: "AGUARDANDO" },
+                    orderBy: { id: "asc" }
+                });
+    
                 if (proximaOrdem) {
                     await tx.ordemProducao.update({
-                        where: {
-                            id: proximaOrdem.id
-                        },
-                        data: {
-                            status: "EM_PRODUCAO"
-                        }
+                        where: { id: proximaOrdem.id },
+                        data: { status: "EM_PRODUCAO" }
                     });
                 }
             }
 
-            return {
-                producao,
-                etiqueta,
-                duplicado: false
-            };
+            return { producao, etiqueta, duplicado: false };
         });
-
     } catch (erro) {
-
-        // Trata uma possível repetição simultânea do mesmo evento
         if (eventoId && erro.code === "P2002") {
-
             const existente = await prisma.producao.findUnique({
-                where: {
-                    eventoId: eventoId
-                },
+                where: { eventoId },
                 include: {
-                    etiquetas: true
+                    etiquetas: true,
+                    itemOrdemProducao: { include: { produto: true } }
                 }
             });
 
@@ -184,14 +159,16 @@ const finalizarProducao = async (dados) => {
 };
 
 const listarProducoes = async () => {
-
     return await prisma.producao.findMany({
         include: {
             ordemProducao: true,
+            itemOrdemProducao: {
+                include: { produto: true }
+            },
             etiquetas: true
-        }
+        },
+        orderBy: { id: "desc" }
     });
-
 };
 
 module.exports = {
