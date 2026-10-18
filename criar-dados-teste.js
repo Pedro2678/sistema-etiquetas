@@ -14,6 +14,7 @@ async function main() {
             descricao: "Tipo de peça 2"
         },
         {
+            
             codigo: "PROD-003",
             nome: "Peça tipo 3",
             descricao: "Tipo de peça 3"

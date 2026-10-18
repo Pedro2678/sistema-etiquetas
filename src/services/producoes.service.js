@@ -4,7 +4,8 @@ const prisma = require("../database/prisma");
 const finalizarProducao = async (dados) => {
     const quantidade = Number(dados.quantidade);
     const ordemProducaoId = Number(dados.ordemProducaoId);
-    const itemOrdemProducaoId = Number(dados.itemOrdemProducaoId);
+    const produtoId = Number(dados.produtoId);
+    const eventoId = dados.eventoId;
 
     if (!Number.isInteger(quantidade) || quantidade <= 0) {
         throw new Error("A quantidade deve ser um inteiro maior que zero");
@@ -14,48 +15,34 @@ const finalizarProducao = async (dados) => {
         throw new Error("ordemProducaoId inválido");
     }
 
-    if (!Number.isInteger(itemOrdemProducaoId) || itemOrdemProducaoId <= 0) {
-        throw new Error("itemOrdemProducaoId inválido");
+    if (!Number.isInteger(produtoId) || produtoId <= 0) {
+        throw new Error("produtoId inválido");
     }
 
-    let eventoId = dados.eventoId;
-
-    if (eventoId !== undefined) {
-        if (typeof eventoId !== "string" || !eventoId.trim()) {
-            throw new Error("O identificador do evento é inválido");
-        }
-        eventoId = eventoId.trim();
+    if (typeof eventoId !== "string" || !eventoId.trim()) {
+        throw new Error("eventoId é obrigatório e deve ser único");
     }
 
-    if (eventoId) {
-        const existente = await prisma.producao.findUnique({
-            where: { eventoId },
-            include: {
-                etiquetas: true,
-                itemOrdemProducao: { include: { produto: true } }
-            }
-        });
+    const evento = eventoId.trim();
 
-        if (existente) {
-            return {
-                producao: existente,
-                etiqueta: existente.etiquetas[0] || null,
-                duplicado: true
-            };
+    const existente = await prisma.producao.findUnique({
+        where: { eventoId: evento },
+        include: {
+            etiquetas: true,
+            itemOrdemProducao: { include: { produto: true } }
         }
+    });
+
+    if (existente) {
+        return {
+            producao: existente,
+            etiqueta: existente.etiquetas[0] || null,
+            duplicado: true
+        };
     }
 
     try {
         return await prisma.$transaction(async (tx) => {
-            const item = await tx.itemOrdemProducao.findUnique({
-                where: { id: itemOrdemProducaoId },
-                include: { produto: true }
-            });
-
-            if (!item || item.ordemProducaoId !== ordemProducaoId) {
-                throw new Error("Item não encontrado nesta ordem de produção");
-            }
-
             const ordem = await tx.ordemProducao.findUnique({
                 where: { id: ordemProducaoId },
                 include: { itens: true }
@@ -69,12 +56,26 @@ const finalizarProducao = async (dados) => {
                 throw new Error("A ordem de produção não está em produção");
             }
 
+            const item = await tx.itemOrdemProducao.findUnique({
+                where: {
+                    ordemProducaoId_produtoId: {
+                        ordemProducaoId,
+                        produtoId
+                    }
+                },
+                include: { produto: true }
+            });
+
+            if (!item) {
+                throw new Error("Produto não encontrado nesta ordem de produção");
+            }
+
             const producoesItem = await tx.producao.findMany({
-                where: { itemOrdemProducaoId }
+                where: { itemOrdemProducaoId: item.id }
             });
 
             const totalItem = producoesItem.reduce(
-                (total, producao) => total + producao.quantidade,
+                (total, p) => total + p.quantidade,
                 0
             );
 
@@ -86,8 +87,8 @@ const finalizarProducao = async (dados) => {
                 data: {
                     quantidade,
                     ordemProducaoId,
-                    itemOrdemProducaoId,
-                    ...(eventoId ? { eventoId } : {})
+                    itemOrdemProducaoId: item.id,
+                    eventoId: evento
                 },
                 include: {
                     itemOrdemProducao: { include: { produto: true } }
@@ -107,11 +108,11 @@ const finalizarProducao = async (dados) => {
             });
 
             const todosItensConcluidos = ordem.itens.every((itemOrdem) => {
-                const totalProduzido = producoesOrdem
+                const total = producoesOrdem
                     .filter((p) => p.itemOrdemProducaoId === itemOrdem.id)
-                    .reduce((total, p) => total + p.quantidade, 0);
+                    .reduce((soma, p) => soma + p.quantidade, 0);
 
-                return totalProduzido >= itemOrdem.quantidade;
+                return total >= itemOrdem.quantidade;
             });
 
             if (todosItensConcluidos) {
@@ -124,7 +125,7 @@ const finalizarProducao = async (dados) => {
                     where: { status: "AGUARDANDO" },
                     orderBy: { id: "asc" }
                 });
-    
+
                 if (proximaOrdem) {
                     await tx.ordemProducao.update({
                         where: { id: proximaOrdem.id },
@@ -136,9 +137,9 @@ const finalizarProducao = async (dados) => {
             return { producao, etiqueta, duplicado: false };
         });
     } catch (erro) {
-        if (eventoId && erro.code === "P2002") {
+        if (erro.code === "P2002") {
             const existente = await prisma.producao.findUnique({
-                where: { eventoId },
+                where: { eventoId: evento },
                 include: {
                     etiquetas: true,
                     itemOrdemProducao: { include: { produto: true } }
@@ -159,7 +160,7 @@ const finalizarProducao = async (dados) => {
 };
 
 const listarProducoes = async () => {
-    return await prisma.producao.findMany({
+    return prisma.producao.findMany({
         include: {
             ordemProducao: true,
             itemOrdemProducao: {

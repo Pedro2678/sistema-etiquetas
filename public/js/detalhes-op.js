@@ -339,27 +339,41 @@ console.log("Chart disponível:", typeof Chart);
     let titulo = "";
 
     if (tipo === "pie") {
-        rotulos = dadosItens.map(item => item.nome);
+       const totalProduzido = dadosItens.reduce(
+    (total, item) => total + item.produzido,
+    0
+);
 
-        datasets = [{
-            label: "Peças produzidas",
-            data: dadosItens.map(item => item.produzido),
-            backgroundColor: dadosItens.map(item => item.cor),
-            borderColor: "#ffffff",
-            borderWidth: 3
-        }];
+const totalMeta = Number(meta) || 0;
+const restante = Math.max(totalMeta - totalProduzido, 0);
 
-        titulo = "Distribuição da produção por tipo";
+rotulos = [
+    ...dadosItens.map(item => item.nome),
+    "Restante da meta"
+];
 
-        const totalProduzido = dadosItens.reduce(
-            (total, item) => total + item.produzido,
-            0
-        );
+datasets = [{
+    label: "Quantidade de peças",
+    data: [
+        ...dadosItens.map(item => item.produzido),
+        restante
+    ],
+    backgroundColor: [
+        ...dadosItens.map(item => item.cor),
+        "#D1D5DB"
+    ],
+    borderColor: "#ffffff",
+    borderWidth: 3
+}];
 
-        mensagem.textContent = totalProduzido > 0
-            ? "Cada fatia representa a quantidade produzida de um tipo de peça."
-            : "Ainda não há peças produzidas para exibir no gráfico.";
-    } else if (tipo === "line") {
+titulo = "Produção x meta total";
+
+mensagem.textContent = totalProduzido > 0
+    ? "Passe o mouse sobre cada fatia para consultar a produção e sua porcentagem da meta."
+    : "Ainda não há peças produzidas para exibir no gráfico.";
+           
+    } 
+    else if (tipo === "line") {
         const eventos = [...producoes].sort(
             (a, b) => new Date(a.dataHora) - new Date(b.dataHora)
         );
@@ -417,13 +431,43 @@ console.log("Chart disponível:", typeof Chart);
         mensagem.textContent =
             "Compare a meta planejada com a quantidade produzida de cada tipo.";
     }
+if (graficoOP) {
+    const dadosAtuais = JSON.stringify({
+        labels: graficoOP.data.labels,
+        datasets: graficoOP.data.datasets.map(dataset => ({
+            label: dataset.label,
+            data: dataset.data,
+            backgroundColor: dataset.backgroundColor
+        })),
+        titulo: graficoOP.options.plugins.title.text,
+        tipo: graficoOP.config.type
+    });
 
-    if (graficoOP) {
-        graficoOP.destroy();
-        graficoOP = null;
+    const novosDados = JSON.stringify({
+        labels: rotulos,
+        datasets: datasets.map(dataset => ({
+            label: dataset.label,
+            data: dataset.data,
+            backgroundColor: dataset.backgroundColor
+        })),
+        titulo,
+        tipo
+    });
+
+    if (dadosAtuais === novosDados) {
+        return;
     }
 
-    graficoOP = new Chart(canvas, {
+    graficoOP.data.labels = rotulos;
+    graficoOP.data.datasets = datasets;
+    graficoOP.options.plugins.title.text = titulo;
+    graficoOP.config.type = tipo;
+    graficoOP.update("none");
+    return;
+
+}
+
+graficoOP = new Chart(canvas, {
         type: tipo,
         data: {
             labels: rotulos,
@@ -436,24 +480,29 @@ console.log("Chart disponível:", typeof Chart);
                 intersect: false,
                 mode: "index"
             },
-            plugins: {
-                legend: {
-                    display: true,
-                    position: "bottom"
-                },
-                title: {
-                    display: true,
-                    text: titulo
-                },
-                tooltip: {
-                    callbacks: {
-                        label: context => {
-                            const valor = Number(context.raw || 0);
-                            return `${context.dataset.label}: ${valor} peças`;
-                        }
-                    }
-                }
-            },
+           plugins: {
+    legend: {
+        display: true,
+        position: "bottom"
+    },
+    title: {
+        display: true,
+        text: titulo
+    },
+    tooltip: {
+        callbacks: {
+            label: context => {
+                const valor = Number(context.raw || 0);
+                const metaTotal = Number(meta) || 0;
+                const percentual = metaTotal > 0
+                    ? (valor / metaTotal) * 100
+                    : 0;
+
+                return `${context.label}: ${valor} peças (${percentual.toFixed(1).replace(".", ",")}%)`;
+            }
+        }
+    }
+},
             scales: tipo === "pie" ? {} : {
                 y: {
                     beginAtZero: true,
@@ -474,11 +523,9 @@ console.log("Chart disponível:", typeof Chart);
         }
     });
 }
-
 document.addEventListener("DOMContentLoaded", () => {
     carregarDetalhesOP();
 
-    // Atualiza os detalhes a cada 5 segundos
     setInterval(() => {
         carregarDetalhesOP();
     }, 5000);
