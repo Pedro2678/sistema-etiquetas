@@ -266,21 +266,35 @@ GET http://localhost:3000/api/producoes
 
 Essa rota é utilizada pelo dashboard para calcular a quantidade produzida e exibir o histórico de produção de cada ordem.
 
-### 5. Registrar uma produção finalizada
+### Registrar produção
 
-**POST `/api/producoes`**
+**Endpoint:** `POST http://localhost:3000/api/producoes`
 
-Registra uma produção associada a uma ordem de produção e cria o registro de etiqueta correspondente.
+Registra uma produção vinculada a uma ordem de produção e a um produto.
 
-Exemplo de requisição:
+**Corpo da requisição (JSON):**
 
 ```json
 {
-  "quantidade": 1,
-  "ordemProducaoId": 2,
-  "eventoId": "LOGO-EVENTO-000127"
+  "quantidade": 30,
+  "ordemProducaoId": 1,
+  "produtoId": 2,
+  "eventoId": "TESTE-008"
 }
 ```
+
+**Campos da requisição:**
+
+- `quantidade`: quantidade de peças produzidas no evento.
+- `ordemProducaoId`: identificador da ordem de produção.
+- `produtoId`: identificador do produto fabricado.
+- `eventoId`: identificador único do evento, utilizado para ajudar a evitar registros duplicados.
+
+**Observações:**
+
+- Utilize uma ordem de produção e um produto existentes no banco de dados.
+- Envie um `eventoId` diferente para cada novo evento de produção.
+- O `id` do registro e a `dataHora` são gerados pelo sistema, conforme a configuração do banco de dados.
 
 **Descrição dos campos:**
 
@@ -483,19 +497,36 @@ Campos principais:
 
 Cada ordem está associada a um produto.
 
-### Producao
+### Registrar produção
 
-Representa um registro de produção.
+**Endpoint:** `POST http://localhost:3000/api/producoes`
 
-Campos principais:
+Registra uma produção vinculada a uma ordem de produção e a um produto.
 
-* `id`
-* `quantidade`
-* `dataHora`
-* `eventoId`
-* `ordemProducaoId`
+**Corpo da requisição (JSON):**
 
-O `id` é gerado pelo banco. Já o `eventoId` é usado para identificar o evento recebido e ajudar a impedir registros duplicados.
+```json
+{
+  "quantidade": 30,
+  "ordemProducaoId": 1,
+  "produtoId": 2,
+  "eventoId": "TESTE-008"
+}
+```
+
+**Campos da requisição:**
+
+- `quantidade`: quantidade de peças produzidas no evento.
+- `ordemProducaoId`: identificador da ordem de produção.
+- `produtoId`: identificador do produto fabricado.
+- `eventoId`: identificador único do evento, utilizado para ajudar a evitar registros duplicados.
+
+**Observações:**
+
+- Utilize uma ordem de produção e um produto existentes no banco de dados.
+- Envie um `eventoId` diferente para cada novo evento de produção.
+- O `id` do registro e a `dataHora` são gerados pelo sistema, conforme a configuração do banco de dados.
+
 
 ### Etiqueta
 
