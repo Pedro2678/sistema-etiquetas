@@ -12,3 +12,15 @@ dev.db
 Thumbs.db
 
 .vscode/
+# Bancos de dados e backups locais
+*.sqlite
+*.sqlite3
+*.db-*
+dev-*.db
+C:\Backups\
+
+# Arquivos temporários de auditoria e cópias
+auditoria-npm.json
+package.json.antes-audit-fix
+package-lock.antes-audit-fix.json
+server.js.backup
