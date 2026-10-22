@@ -936,40 +936,6 @@ footer {
     color: #111827;
 }
 
-.history-op-status {
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: fit-content;
-
-    padding: 6px 12px;
-
-    border-radius: 20px;
-
-    font-size: 11px;
-    font-weight: 700;
-
-    text-transform: uppercase;
-}
-
-.history-op-status.em_producao {
-    background: #dbeafe;
-    color: #2563eb;
-}
-
-.history-op-status.concluida {
-    background: #dcfce7;
-    color: #16a34a;
-}
-
-.history-op-status.aguardando {
-    background: #fef3c7;
-    color: #d97706;
-}
-
-
 
 .history-op-status.concluida {
     background: #dcfce7;
@@ -2283,6 +2249,373 @@ button,
         transition: none;
     }
 }
+
+
+/* CORREÇÃO DEFINITIVA DOS STATUS NO REGISTRO DE OP */
+
+#ordensRegistroContainer .history-op-status {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content !important;
+    min-width: 0 !important;
+    max-width: max-content !important;
+    justify-self: start;
+    flex: 0 0 auto;
+
+    padding: 6px 12px !important;
+    margin: 0;
+
+    font-family: "Segoe UI", Arial, sans-serif;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.4 !important;
+    letter-spacing: 0.35px;
+
+    text-align: center;
+    white-space: nowrap;
+    text-transform: uppercase;
+
+    border: 1px solid transparent !important;
+    border-radius: 5px !important;
+    box-sizing: border-box;
+}
+
+/* EM PRODUÇÃO — azul discreto */
+#ordensRegistroContainer .history-op-status.em_producao {
+    color: #1885d8 !important;
+    background: #edf4fa !important;
+    border-color: #cbddeb !important;
+}
+
+/* CONCLUÍDA — verde discreto */
+#ordensRegistroContainer .history-op-status.concluida {
+    color: #17ad60 !important;
+    background: #edf7f0 !important;
+    border-color: #cce6d4 !important;
+}
+
+/* AGUARDANDO — amarelo discreto */
+#ordensRegistroContainer .history-op-status.aguardando {
+    color: #896116 !important;
+    background: #fff6e5 !important;
+    border-color: #efdfb9 !important;
+}
+
+
+/* ==========================================
+   ATIVIDADE RECENTE — ÚLTIMA PRODUÇÃO
+========================================== */
+
+.last-production-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+
+    padding: 22px 26px;
+    margin-bottom: 24px;
+
+    background: #ffffff;
+    border: 1px solid #dfe5eb;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(22, 40, 58, 0.035);
+}
+
+.last-production-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 3px;
+}
+
+.last-production-info .section-label {
+    margin-bottom: 3px;
+    color: #647386;
+    font-size: 10px;
+    font-weight: 750;
+    letter-spacing: 1.2px;
+}
+
+.last-production-info h2,
+.last-production-info h3 {
+    color: #202d3a;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+}
+
+/* Data e horário */
+.last-production-datetime {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-top: 3px;
+    padding: 5px 9px;
+
+    color: #536579;
+    background: #f5f7fa;
+    border: 1px solid #e7ecf1;
+    border-radius: 5px;
+
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.4;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Quantidade produzida */
+.last-production-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 13px;
+
+    color: #245a82;
+    background: #edf4fa;
+    border: 1px solid #d6e4f0;
+    border-radius: 6px;
+
+    font-size: 13px;
+    font-weight: 700;
+    line-height: 1.4;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+/* Adaptação para telas pequenas */
+@media (max-width: 600px) {
+    .last-production-card {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 16px;
+        padding: 18px;
+    }
+
+    .last-production-info {
+        width: 100%;
+    }
+
+    .last-production-datetime {
+        max-width: 100%;
+        flex-wrap: wrap;
+    }
+
+    .last-production-value {
+        white-space: normal;
+    }
+}
+
+/* Última produção — mesmo estilo do status EM PRODUÇÃO */
+.last-production-value {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    width: fit-content;
+    min-height: 28px;
+    padding: 6px 13px;
+
+    color: #176b43 !important;
+    background: #dcfce7 !important;
+    border: 1px solid transparent !important;
+    border-radius: 999px !important;
+
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.3;
+    white-space: nowrap;
+    box-shadow: none;
+}
+
+/* =========================================
+   STATUS DAS ORDENS DE PRODUÇÃO
+   Classes confirmadas pelo registro-op.js
+========================================= */
+
+#ordensRegistroContainer .history-op-item .history-op-status {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+
+    width: fit-content !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    min-height: 28px !important;
+
+    padding: 6px 13px !important;
+    margin: 0 !important;
+
+    border: 1px solid transparent !important;
+    border-radius: 999px !important;
+
+    font-family: "Segoe UI", Arial, sans-serif !important;
+    font-size: 11px !important;
+    font-weight: 700 !important;
+    line-height: 1.3 !important;
+    letter-spacing: 0.35px !important;
+    text-align: center !important;
+    text-transform: uppercase !important;
+    white-space: nowrap !important;
+
+    box-shadow: none !important;
+    box-sizing: border-box !important;
+}
+
+/* CONCLUÍDA — verde */
+#ordensRegistroContainer .history-op-item .history-op-status.concluida {
+    color: #176b43 !important;
+    background-color: #dcfce7 !important;
+    border-color: #c1ebcf !important;
+}
+
+/* EM PRODUÇÃO — azul */
+#ordensRegistroContainer .history-op-item .history-op-status.em_producao {
+    color: #245ac5 !important;
+    background-color: #e5efff !important;
+    border-color: #c9dcff !important;
+}
+
+/* AGUARDANDO — amarelo */
+#ordensRegistroContainer .history-op-item .history-op-status.aguardando {
+    color: #95600b !important;
+    background-color: #fff3d6 !important;
+    border-color: #f0dfb5 !important;
+}
+
+
+/* ==========================================
+   GRÁFICO DE PRODUÇÃO — VISUAL PROFISSIONAL
+========================================== */
+
+.chart-container {
+    position: relative;
+    width: 100%;
+    height: 360px;
+    min-width: 0;
+
+    padding: 24px;
+    margin-bottom: 24px;
+
+    background: #ffffff;
+    border: 1px solid #dfe5eb;
+    border-radius: 9px;
+    box-shadow: 0 2px 7px rgba(22, 40, 58, 0.035);
+
+    overflow: hidden;
+}
+
+/* Título e seletor do gráfico */
+.chart-selector {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+
+    padding: 17px 22px;
+
+    background: #ffffff;
+    border: 1px solid #dfe5eb;
+    border-bottom: none;
+    border-radius: 9px 9px 0 0;
+}
+
+.chart-selector label {
+    color: #26394b;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.chart-selector select {
+    min-width: 170px;
+    min-height: 39px;
+    padding: 8px 34px 8px 12px;
+
+    color: #234766;
+    background-color: #f8fafc;
+    border: 1px solid #d5dee7;
+    border-radius: 6px;
+
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+
+    transition: border-color 0.15s ease,
+                background-color 0.15s ease;
+}
+
+.chart-selector select:hover {
+    background-color: #ffffff;
+    border-color: #9db3c8;
+}
+
+.chart-selector select:focus-visible {
+    outline: 3px solid #d5e5f5;
+    outline-offset: 2px;
+    border-color: #315f87;
+}
+
+/* Mensagens de carregamento ou ausência de dados */
+.chart-message {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 100px;
+    padding: 20px;
+
+    color: #647386;
+    font-size: 13px;
+    text-align: center;
+}
+
+/* O canvas respeita o tamanho controlado pelo container */
+.chart-container canvas {
+    display: block;
+    max-width: 100%;
+}
+
+/* Telas menores */
+@media (max-width: 600px) {
+    .chart-container {
+        height: 300px;
+        padding: 12px;
+    }
+
+    .chart-selector {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 15px;
+    }
+
+    .chart-selector select {
+        width: 100%;
+    }
+}
+
+.production-history-type {
+    display: inline-flex;
+    align-items: center;
+    width: fit-content;
+    margin: 4px 0;
+    padding: 4px 9px;
+    border-radius: 6px;
+    background: #eef2ff;
+    color: #3730a3;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+
+
+
+
+
+
 
 
 

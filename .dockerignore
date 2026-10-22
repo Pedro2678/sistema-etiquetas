@@ -1,0 +1,47 @@
+
+# Dependências instaladas localmente
+node_modules/
+
+# Controle de versão
+.git/
+.gitignore
+
+# Configurações e segredos locais
+.env
+.env.*
+!.env.example
+
+# Bancos SQLite e arquivos auxiliares
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# Backups e restaurações locais
+backup-*
+dev-*-backup.db
+dev-*-teste.db
+dev-restauracao-*.db
+dev-rollback-*.db
+
+# Arquivos de auditoria e testes locais
+auditoria-npm.json
+package.json.antes-audit-fix
+package-lock.antes-audit-fix.json
+server-teste.js
+teste-rollback.js
+preparar-teste-concorrencia.js
+verificar-*.js
+consultar-produtos.js
+limpar-dados.js
+
+# Configurações do editor e do sistema operacional
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+npm-debug.log*

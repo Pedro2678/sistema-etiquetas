@@ -183,6 +183,10 @@ function atualizarDashboard(ordens, producoes) {
                 ? "EM PRODUÇÃO"
                 : "AGUARDANDO";
 
+    
+  
+    // ÚLTIMA PRODUÇÃO DA ORDEM
+   
     // ÚLTIMA PRODUÇÃO DA ORDEM
     const ultimaProducao = [...producoesDaOrdem].sort(
         (a, b) => new Date(b.dataHora) - new Date(a.dataHora)
@@ -191,15 +195,40 @@ function atualizarDashboard(ordens, producoes) {
     const elementoUltimaProducao =
         document.getElementById("ultimaProducao");
 
-    if (elementoUltimaProducao) {
-        elementoUltimaProducao.textContent = ultimaProducao
-            ? `+${ultimaProducao.quantidade} peça(s) produzida(s)`
-            : "Aguardando produção...";
-    }
-}
+    const elementoDataHora =
+        document.getElementById("dataHoraUltimaProducao");
 
+    if (ultimaProducao) {
+        // Quantidade produzida
+        if (elementoUltimaProducao) {
+            elementoUltimaProducao.textContent =
+                `+${ultimaProducao.quantidade} peça(s) produzida(s)`;
+        }
 
+        // Data e hora do registro
+        if (elementoDataHora) {
+            const dataRegistro = new Date(ultimaProducao.dataHora);
 
+            elementoDataHora.textContent =
+                !Number.isNaN(dataRegistro.getTime())
+                    ? dataRegistro.toLocaleString("pt-BR", {
+                        dateStyle: "short",
+                        timeStyle: "short"
+                    })
+                    : "Data e hora indisponíveis";
+        }
+    } else {
+        if (elementoUltimaProducao) {
+            elementoUltimaProducao.textContent =
+                "Aguardando produção...";
+        }
+
+        if (elementoDataHora) {
+            elementoDataHora.textContent =
+                "Nenhuma produção registrada";
+        }
+     }
+ }
 
 // =========================================================
 // TABELA DE PRODUÇÕES

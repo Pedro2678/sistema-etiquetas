@@ -201,7 +201,8 @@ renderizarProducoes(producoes);
 renderizarGrafico(meta, produzido, restante, producoes, itens);
 }
 
-function renderizarProducoes(producoes) {
+
+function renderizarProducoes(producoes, itens = []) {
     const container = document.getElementById("producoesOPContainer");
 
     if (!container) return;
@@ -232,7 +233,16 @@ function renderizarProducoes(producoes) {
             minute: "2-digit",
             second: "2-digit"
         });
+        
+        const item = itens.find(
+    item => Number(item.id) === Number(producao.itemOrdemProducaoId)
+);
 
+const nomePeca =
+    producao.itemOrdemProducao?.produto?.nome ||
+    item?.produto?.nome ||
+    "Tipo de peça não identificado";
+  
         const numero = document.createElement("div");
         numero.className = "production-history-number";
         numero.textContent = ordenadas.length - indice;
@@ -243,6 +253,10 @@ function renderizarProducoes(producoes) {
         const evento = document.createElement("strong");
         evento.textContent = `Evento: ${producao.eventoId || "Não informado"}`;
 
+        const tipoPeca = document.createElement("span");
+        tipoPeca.className = "production-history-type";
+        tipoPeca.textContent = `Tipo de peça: ${nomePeca}`;
+
         const quantidade = document.createElement("span");
         quantidade.textContent =
             `${producao.quantidade} ${producao.quantidade === 1 ? "peça" : "peças"}`;
@@ -250,17 +264,17 @@ function renderizarProducoes(producoes) {
         const horario = document.createElement("span");
         horario.textContent = `${dataFormatada} às ${horaFormatada}`;
 
-        info.append(evento, quantidade, horario);
+        info.append(evento, tipoPeca, quantidade, horario);
 
         const etiquetas = document.createElement("div");
         etiquetas.className = "production-history-labels";
 
         if (producao.etiquetas?.length) {
             producao.etiquetas.forEach(etiqueta => {
-                const item = document.createElement("span");
-                item.className = "history-label";
-                item.textContent = etiqueta.codigo;
-                etiquetas.appendChild(item);
+                const itemEtiqueta = document.createElement("span");
+                itemEtiqueta.className = "history-label";
+                itemEtiqueta.textContent = etiqueta.codigo;
+                etiquetas.appendChild(itemEtiqueta);
             });
         } else {
             etiquetas.textContent = "Etiquetas não informadas";
@@ -270,6 +284,7 @@ function renderizarProducoes(producoes) {
         container.appendChild(elemento);
     });
 }
+
    
     function renderizarGrafico(meta, produzido, restante, producoes, itens = []) {
     const canvas = document.getElementById("graficoOP");
@@ -468,61 +483,167 @@ if (graficoOP) {
 }
 
 graficoOP = new Chart(canvas, {
-        type: tipo,
-        data: {
-            labels: rotulos,
-            datasets
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: "index"
-            },
-           plugins: {
-    legend: {
-        display: true,
-        position: "bottom"
+     type: tipo,
+    data: {
+        labels: rotulos,
+        datasets
     },
-    title: {
-        display: true,
-        text: titulo
-    },
-    tooltip: {
-        callbacks: {
-            label: context => {
-                const valor = Number(context.raw || 0);
-                const metaTotal = Number(meta) || 0;
-                const percentual = metaTotal > 0
-                    ? (valor / metaTotal) * 100
-                    : 0;
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
 
-                return `${context.label}: ${valor} peças (${percentual.toFixed(1).replace(".", ",")}%)`;
+        animation: {
+            duration: 350,
+            easing: "easeOutQuart"
+        },
+
+        interaction: {
+            intersect: false,
+            mode: tipo === "bar" ? "index" : "nearest"
+        },
+
+        layout: {
+            padding: {
+                top: 12,
+                right: 12,
+                bottom: 4,
+                left: 6
             }
-        }
-    }
-},
-            scales: tipo === "pie" ? {} : {
-                y: {
-                    beginAtZero: true,
-                    ticks: { precision: 0 },
-                    title: {
-                        display: true,
-                        text: "Quantidade de peças"
+        },
+
+        plugins: {
+            legend: {
+                display: true,
+                position: "bottom",
+
+                labels: {
+                    color: "#526274",
+                    usePointStyle: true,
+                    pointStyle: "circle",
+                    boxWidth: 8,
+                    boxHeight: 8,
+                    padding: 22,
+                    font: {
+                        family: "'Segoe UI', Arial, sans-serif",
+                        size: 11,
+                        weight: "600"
+                    }
+                }
+            },
+
+            title: {
+                display: true,
+                text: titulo,
+                align: "start",
+                color: "#24384b",
+                padding: {
+                    top: 4,
+                    bottom: 24
+                },
+                font: {
+                    family: "'Segoe UI', Arial, sans-serif",
+                    size: 15,
+                    weight: "700"
+                }
+            },
+
+            tooltip: {
+                enabled: true,
+                backgroundColor: "#1f3347",
+                titleColor: "#ffffff",
+                bodyColor: "#e5edf5",
+                borderColor: "#40566c",
+                borderWidth: 1,
+                cornerRadius: 7,
+                padding: 12,
+                displayColors: true,
+
+                titleFont: {
+                    size: 12,
+                    weight: "700"
+                },
+
+                bodyFont: {
+                    size: 12
+                },
+
+                callbacks: {
+                    label: context => {
+                        const valor = Number(context.raw || 0);
+                        const metaTotal = Number(meta) || 0;
+                        const percentual = metaTotal > 0
+                            ? (valor / metaTotal) * 100
+                            : 0;
+
+                        return ` ${context.dataset.label}: ${
+                            valor.toLocaleString("pt-BR")
+                        } peças (${percentual.toFixed(1).replace(".", ",")}%)`;
+                    }
+                }
+            }
+        },
+
+        scales: tipo === "pie" ? {} : {
+            y: {
+                beginAtZero: true,
+
+                border: {
+                    display: false
+                },
+
+                grid: {
+                    color: "#edf1f5",
+                    drawTicks: false
+                },
+
+                ticks: {
+                    precision: 0,
+                    color: "#7a8998",
+                    padding: 10,
+                    font: {
+                        size: 11
                     }
                 },
-                x: {
-                    ticks: {
-                        autoSkip: false,
-                        maxRotation: 35,
-                        minRotation: 0
+
+                title: {
+                    display: true,
+                    text: "Quantidade de peças",
+                    color: "#657588",
+                    padding: {
+                        bottom: 12
+                    },
+                    font: {
+                        size: 11,
+                        weight: "600"
+                    }
+                }
+            },
+
+            x: {
+                border: {
+                    display: false
+                },
+
+                grid: {
+                    display: false
+                },
+
+                ticks: {
+                    color: "#647386",
+                    autoSkip: true,
+                    maxRotation: 0,
+                    minRotation: 0,
+                    maxTicksLimit: 10,
+                    font: {
+                        size: 11
                     }
                 }
             }
         }
-    });
-}
+    }
+});
+};
+
 document.addEventListener("DOMContentLoaded", () => {
     carregarDetalhesOP();
 
