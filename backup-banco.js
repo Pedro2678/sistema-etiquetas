@@ -1,15 +1,14 @@
-﻿const fs = require("fs");
-const path = require("path");
+﻿
+const fs = require("node:fs");
+const path = require("node:path");
 const Database = require("better-sqlite3");
 
-const projeto = __dirname;
-const origem = path.join(projeto, "dev.db");
-const pastaBackup = "C:\\Backups\\SistemaEtiquetas";
+const origem = "/app/data/dev.db";
+const pastaBackup = "/backups";
+const retencaoDias = 30;
 
 function dataHora() {
-  const d = new Date();
-  const p = n => String(n).padStart(2, "0");
-  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}_${p(d.getHours())}-${p(d.getMinutes())}-${p(d.getSeconds())}`;
+  return new Date().toISOString().replace(/:/g, "-").replace(/\./g, "-");
 }
 
 async function main() {
@@ -19,52 +18,83 @@ async function main() {
 
   fs.mkdirSync(pastaBackup, { recursive: true });
 
-  const destino = path.join(
-    pastaBackup,
-    `dev_${dataHora()}.db`
-  );
+  const destino = path.join(pastaBackup, `dev_${dataHora()}.db`);
+  const temporario = `${destino}.tmp`;
 
-  const db = new Database(origem, { readonly: true, fileMustExist: true });
+  const db = new Database(origem, {
+    readonly: true,
+    fileMustExist: true,
+    timeout: 10000,
+  });
 
   try {
-    await db.backup(destino);
+    console.log("Criando backup online do SQLite...");
+    await db.backup(temporario);
   } finally {
     db.close();
   }
 
-  const copia = new Database(destino, { readonly: true, fileMustExist: true });
-
   try {
-    const resultado = copia.pragma("integrity_check");
-    if (resultado.length !== 1 || resultado[0].integrity_check !== "ok") {
-      throw new Error("A verificação de integridade falhou.");
+    const copia = new Database(temporario, {
+      readonly: true,
+      fileMustExist: true,
+    });
+
+    try {
+      const integridade = copia.pragma("integrity_check", { simple: true });
+
+      if (integridade !== "ok") {
+        throw new Error(`Falha na integridade: ${integridade}`);
+      }
+
+      const tabelas = [
+        "Produto",
+        "OrdemProducao",
+        "ItemOrdemProducao",
+        "Producao",
+        "Etiqueta",
+      ];
+
+      const contagens = {};
+
+      for (const tabela of tabelas) {
+        contagens[tabela] = copia
+          .prepare(`SELECT COUNT(*) AS total FROM "${tabela}"`)
+          .get().total;
+      }
+
+      console.log("Integridade: ok");
+      console.log("Registros:", contagens);
+    } finally {
+      copia.close();
     }
 
-    const tabelas = [
-      "Produto",
-      "OrdemProducao",
-      "ItemOrdemProducao",
-      "Producao",
-      "Etiqueta"
-    ];
+    fs.renameSync(temporario, destino);
+    console.log(`Backup criado e validado: ${destino}`);
 
-    const contagens = {};
-    for (const tabela of tabelas) {
-      contagens[tabela] = copia
-        .prepare(`SELECT COUNT(*) AS total FROM "${tabela}"`)
-        .get().total;
+    const limite = Date.now() - retencaoDias * 24 * 60 * 60 * 1000;
+
+    for (const nome of fs.readdirSync(pastaBackup)) {
+      if (!/^dev_.*\.db$/.test(nome)) continue;
+
+      const arquivo = path.join(pastaBackup, nome);
+      const stat = fs.statSync(arquivo);
+
+      if (stat.isFile() && stat.mtimeMs < limite) {
+        fs.unlinkSync(arquivo);
+        console.log(`Backup antigo removido: ${nome}`);
+      }
     }
 
-    console.log("Backup criado e validado:");
-    console.log(destino);
-    console.log("Integridade: ok");
-    console.log("Registros:", contagens);
+    console.log("Backup concluído com sucesso.");
   } finally {
-    copia.close();
+    if (fs.existsSync(temporario)) {
+      fs.unlinkSync(temporario);
+    }
   }
 }
 
-main().catch(erro => {
+main().catch((erro) => {
   console.error("ERRO NO BACKUP:", erro);
   process.exitCode = 1;
 });

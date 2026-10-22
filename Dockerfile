@@ -16,6 +16,7 @@ RUN npm ci
 
 # Copiar o código, sem os arquivos excluídos pelo .dockerignore
 COPY . .
+COPY backup-banco.js ./backup-banco.js
 
 # Configurar o banco antes de executar o Prisma
 ENV NODE_ENV=production

@@ -45,3 +45,5 @@ desktop.ini
 # Logs
 *.log
 npm-debug.log*
+
+!backup-banco.js
